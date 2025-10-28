@@ -111,7 +111,7 @@
 
       <div style="margin-top:10px">
         <div class="donate">
-          <div style="font-weight:800">Donate (M-Pesa)</div>
+          <div style="font-weight:800">Support Us (M-Pesa)</div>
           <div style="margin-top:8px; display:flex;align-items:center;justify-content:space-between">
             <div>
               <div style="font-size:13px">Till number</div>
@@ -136,7 +136,6 @@
 </div>
 
 <script>
-  /************** BOARD + GAME LOGIC — unchanged **************/
   const BOARD_SIZE=10;
   const gridEl=document.getElementById('grid');
   const cells=[];
@@ -174,7 +173,6 @@
   function confettiBurst(){const w=board.clientWidth,h=board.clientHeight;const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;canvas.style.position='absolute';canvas.style.left=0;canvas.style.top=0;canvas.style.zIndex=80;board.appendChild(canvas);const ctx=canvas.getContext('2d');const pieces=[];for(let i=0;i<60;i++){pieces.push({x:Math.random()*w,y:Math.random()*-h,vx:(Math.random()-.5)*6,vy:2+Math.random()*6,size:6+Math.random()*8,color:['#f97316','#60a5fa','#f472b6','#34d399','#fef08a'][Math.floor(Math.random()*5)],rot:Math.random()*Math.PI});}let t=0;function drawFrame(){t++;ctx.clearRect(0,0,w,h);for(const p of pieces){p.x+=p.vx;p.y+=p.vy;p.rot+=.1;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.color;ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);ctx.restore();}if(t<140)requestAnimationFrame(drawFrame);else canvas.remove();}drawFrame();}
   const boardImg=document.getElementById('boardImg');if(boardImg.complete)updateStats();else boardImg.addEventListener('load',updateStats);
 
-  /************** AUTO LANDSCAPE (mobile rotation) **************/
   const wrapper=document.querySelector('.game-wrapper');
   function handleOrientation(){
     if(window.innerHeight>window.innerWidth){
@@ -189,4 +187,5 @@
 </script>
 </body>
 </html>
+
 
