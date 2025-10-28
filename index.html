@@ -1,99 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>nakes & Ladders Online</title>
-<link rel="icon" type="image/jpeg" href="./favicon1.jpeg">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Snakes & Ladders Online</title>
+<link rel="icon" type="image/jpeg" href="./favicon1.jpeg" />
 <style>
 :root {
   --blue: #3b82f6;
   --red: #ef4444;
   --bg-dark: #0b1120;
   --accent: #14b8a6;
-  --card-bg: rgba(255,255,255,0.04);
+  --card-bg: rgba(255,255,255,0.05);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 html, body {
-  height: 100%;
   width: 100%;
+  height: 100%;
   overflow: hidden;
   font-family: 'Inter', sans-serif;
-  color: #fff;
   background: linear-gradient(180deg, #030712, #111827);
+  color: #fff;
 }
 
+/* Layout containers */
 .main {
   display: flex;
   flex-direction: row;
-  height: 100vh;
   width: 100vw;
+  height: 100vh;
   overflow: hidden;
 }
 
 .containerA, .containerB {
-  padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: start;
-  gap: 1rem;
-  overflow: hidden;
+  justify-content: flex-start;
+  gap: 0.6rem;
+  padding: 0.6rem;
 }
 
 .containerA {
-  flex: 2.5;
+  flex: 2.4;
   background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
-  position: relative;
+  overflow: hidden;
 }
 
 .containerB {
   flex: 1;
   background: linear-gradient(180deg, #1e293b, #0f172a);
-  border-left: 2px solid rgba(255,255,255,0.05);
+  border-left: 1px solid rgba(255,255,255,0.1);
   overflow: hidden;
 }
 
-/* Responsive stacking on mobile */
+/* Stack on mobile */
 @media (max-width: 900px) {
   .main { flex-direction: column; }
   .containerA, .containerB {
-    flex: none;
     width: 100%;
+    flex: none;
     height: 50%;
   }
 }
 
-/* Board styling */
+/* Buttons */
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+.btn {
+  background: var(--card-bg);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-size: 0.9rem;
+}
+.btn:hover { background: rgba(255,255,255,0.1); }
+.btn.primary { background: linear-gradient(90deg, var(--blue), var(--red)); }
+
+/* Board */
 .board-wrapper {
+  flex: 1;
   width: 100%;
-  height: 100%;
-  max-height: 80vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
 }
-
 .board {
   position: relative;
-  width: 90%;
-  aspect-ratio: 1 / 1;
+  width: 95%;
+  height: 95%;
   border-radius: 10px;
   overflow: hidden;
-  border: 5px solid rgba(255,255,255,0.1);
+  border: 3px solid rgba(255,255,255,0.1);
   background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
 .board img {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
-
-/* Grid invisible overlay */
 .grid {
   position: absolute;
   inset: 0;
@@ -106,7 +128,7 @@ html, body {
 /* Tokens */
 .token {
   position: absolute;
-  width: 6.5%;
+  width: 6%;
   aspect-ratio: 1 / 1;
   border-radius: 50%;
   border: 2px solid #fff;
@@ -115,84 +137,63 @@ html, body {
   justify-content: center;
   color: #fff;
   font-weight: bold;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
   transform: translate(-50%, -50%);
   transition: all 0.4s ease;
   z-index: 10;
 }
-
 .token.blue { background: var(--blue); }
 .token.red { background: var(--red); }
 
-/* Buttons */
-.btn-group {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.btn {
-  background: var(--card-bg);
-  border: 1px solid rgba(255,255,255,0.1);
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.btn:hover { background: rgba(255,255,255,0.1); }
-.btn.primary { background: linear-gradient(90deg, var(--blue), var(--red)); }
-
-/* Dice */
+/* Dice moved to sidebar */
 .dice {
-  width: 100px;
-  height: 100px;
-  border-radius: 12px;
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--blue);
-  font-size: 28px;
+  font-size: 26px;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-  transition: transform 0.6s;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  transition: transform 0.6s, background 0.3s;
 }
 .dice.rolling { transform: rotate(720deg); }
 
 /* Sidebar sections */
 .section {
   width: 100%;
-  padding: 0.8rem;
+  padding: 0.6rem;
   background: var(--card-bg);
-  border-radius: 10px;
-  overflow: hidden;
+  border-radius: 8px;
+  font-size: 0.9rem;
 }
-
 .section h3 {
-  font-size: 16px;
-  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
 }
-
 .log {
-  max-height: 160px;
+  max-height: 120px;
   overflow-y: auto;
-  font-size: 13px;
+  font-size: 0.8rem;
   line-height: 1.3;
   color: #d1d5db;
 }
 
-/* Utility */
-.no-scroll { overflow: hidden; }
+/* Scrollbars hidden on logs */
+.log::-webkit-scrollbar { width: 0; }
+
+/* Fit all on screen */
+body, html, .main, .containerA, .containerB { overflow: hidden; }
 </style>
 </head>
 <body>
+
 <div class="main">
 
-  <!-- Container A -->
+  <!-- Container A: Game Board + Buttons -->
   <div class="containerA">
     <div class="btn-group">
       <button id="btnTwo" class="btn">Two Players</button>
@@ -202,18 +203,18 @@ html, body {
 
     <div class="board-wrapper">
       <div class="board" id="board">
-        <img src="./snakes.jpg" alt="Snakes & Ladders">
+        <img src="./snakes.jpg" alt="Snakes & Ladders" />
         <div class="grid" id="grid"></div>
         <div class="token blue" id="token-blue">B</div>
         <div class="token red" id="token-red">R</div>
       </div>
     </div>
-
-    <div class="dice" id="dice">🎲</div>
   </div>
 
-  <!-- Container B -->
+  <!-- Container B: Controls + Dice + Info -->
   <div class="containerB">
+    <div class="dice" id="dice">🎲</div>
+
     <div class="section">
       <h3>Game Info</h3>
       <p>Turn: <span id="turnName">Blue</span></p>
@@ -233,7 +234,7 @@ html, body {
 
     <div class="section">
       <h3>Rules</h3>
-      <ul style="font-size:13px;margin-left:1.2rem;">
+      <ul style="margin-left:1rem;font-size:0.8rem;">
         <li>Roll the dice to move.</li>
         <li>Land on a ladder to climb.</li>
         <li>Land on a snake to slide down.</li>
@@ -243,124 +244,112 @@ html, body {
 </div>
 
 <script>
-/* ====== Game Variables ====== */
-const BOARD_SIZE = 10;
-const LADDERS = {3:45,8:12,14:26,21:39,31:73,59:80,90:92,83:97};
-const SNAKES  = {99:41,95:67,89:85,57:2,54:27,11:6};
+/* === Variables === */
+const BOARD_SIZE=10;
+const LADDERS={3:45,8:12,14:26,21:39,31:73,59:80,90:92,83:97};
+const SNAKES={99:41,95:67,89:85,57:2,54:27,11:6};
+let positions=[0,0];
+let currentPlayer=0;
+let gameMode='ai';
+let rolling=false;
+const aiDelay=2000;
 
-let positions = [0,0];
-let currentPlayer = 0;
-let gameMode = 'ai';
-let rolling = false;
-const aiDelay = 2000;
+/* Elements */
+const dice=document.getElementById('dice');
+const tokenBlue=document.getElementById('token-blue');
+const tokenRed=document.getElementById('token-red');
+const turnName=document.getElementById('turnName');
+const bluePos=document.getElementById('bluePos');
+const redPos=document.getElementById('redPos');
+const logEl=document.getElementById('log');
+const btnTwo=document.getElementById('btnTwo');
+const btnAI=document.getElementById('btnAI');
+const resetBtn=document.getElementById('resetBtn');
+const board=document.getElementById('board');
+const grid=document.getElementById('grid');
 
-/* DOM Elements */
-const dice = document.getElementById('dice');
-const tokenBlue = document.getElementById('token-blue');
-const tokenRed = document.getElementById('token-red');
-const turnName = document.getElementById('turnName');
-const bluePos = document.getElementById('bluePos');
-const redPos = document.getElementById('redPos');
-const logEl = document.getElementById('log');
-const btnTwo = document.getElementById('btnTwo');
-const btnAI = document.getElementById('btnAI');
-const resetBtn = document.getElementById('resetBtn');
-const board = document.getElementById('board');
-const grid = document.getElementById('grid');
-
-/* Generate grid */
-const cells = [];
-for (let r=0;r<BOARD_SIZE;r++) {
-  for (let c=0;c<BOARD_SIZE;c++) {
-    const div = document.createElement('div');
-    const num = calcNum(r,c);
-    div.dataset.num = num;
+/* Grid generation */
+const cells=[];
+for(let r=0;r<BOARD_SIZE;r++){
+  for(let c=0;c<BOARD_SIZE;c++){
+    const div=document.createElement('div');
+    const num=calcNum(r,c);
+    div.dataset.num=num;
     grid.appendChild(div);
-    cells[num] = div;
+    cells[num]=div;
   }
 }
-function calcNum(r,c) {
-  const rr = 9 - r;
-  return rr % 2 === 0 ? rr*10 + c + 1 : rr*10 + (10 - c);
+function calcNum(r,c){
+  const rr=9-r;
+  return rr%2===0?rr*10+c+1:rr*10+(10-c);
 }
-
-/* Helpers */
 function getCellCenter(num){
-  const rect = board.getBoundingClientRect();
-  const cell = cells[num];
-  if(!cell) return {x: rect.width*0.08, y: rect.height*0.92};
-  const crect = cell.getBoundingClientRect();
-  return {x: crect.left - rect.left + crect.width/2, y: crect.top - rect.top + crect.height/2};
+  const rect=board.getBoundingClientRect();
+  const cell=cells[num];
+  if(!cell) return {x:rect.width*0.08,y:rect.height*0.92};
+  const crect=cell.getBoundingClientRect();
+  return {x:crect.left-rect.left+crect.width/2,y:crect.top-rect.top+crect.height/2};
 }
 function placeToken(el,num){
-  const {x,y}= getCellCenter(num);
-  el.style.left = x + 'px';
-  el.style.top = y + 'px';
+  const {x,y}=getCellCenter(num);
+  el.style.left=x+'px';
+  el.style.top=y+'px';
 }
 function updateStats(){
-  bluePos.textContent = positions[0];
-  redPos.textContent = positions[1];
+  bluePos.textContent=positions[0];
+  redPos.textContent=positions[1];
 }
 function addLog(msg){
-  const p = document.createElement('div');
-  p.textContent = msg;
+  const p=document.createElement('div');
+  p.textContent=msg;
   logEl.prepend(p);
 }
 
-/* ===== Game Logic ===== */
-dice.addEventListener('click', async ()=>{
-  if(rolling) return;
-  if(gameMode==='ai' && currentPlayer===1) return;
-  rolling = true;
+/* === Game Logic === */
+dice.addEventListener('click',async()=>{
+  if(rolling)return;
+  if(gameMode==='ai'&&currentPlayer===1)return;
+  rolling=true;
   dice.classList.add('rolling');
-  const roll = Math.floor(Math.random()*6)+1;
+  const roll=Math.floor(Math.random()*6)+1;
   await new Promise(r=>setTimeout(r,600));
   dice.classList.remove('rolling');
-  await movePlayer(currentPlayer, roll);
+  await movePlayer(currentPlayer,roll);
 });
 
-async function movePlayer(p, roll){
-  let pos = positions[p] + roll;
-  if(pos>100) pos = positions[p];
-  positions[p] = pos;
+async function movePlayer(p,roll){
+  let pos=positions[p]+roll;
+  if(pos>100)pos=positions[p];
+  positions[p]=pos;
   addLog(`${p==0?'Blue':'Red/Comp'} rolled ${roll} → ${pos}`);
-  placeToken(p===0?tokenBlue:tokenRed, pos);
+  placeToken(p===0?tokenBlue:tokenRed,pos);
   updateStats();
-
   if(LADDERS[pos]){
     positions[p]=LADDERS[pos];
     addLog('🎯 Ladder! climb to '+LADDERS[pos]);
-  } else if(SNAKES[pos]){
+  }else if(SNAKES[pos]){
     positions[p]=SNAKES[pos];
     addLog('🐍 Snake! down to '+SNAKES[pos]);
   }
-
-  placeToken(p===0?tokenBlue:tokenRed, positions[p]);
+  placeToken(p===0?tokenBlue:tokenRed,positions[p]);
   updateStats();
-
-  if(positions[p]===100){
-    addLog(`${p==0?'Blue':'Red/Comp'} wins!`);
-    return;
-  }
-
-  currentPlayer = 1-currentPlayer;
-  turnName.textContent = currentPlayer==0?'Blue':(gameMode==='ai'?'Computer':'Red');
+  if(positions[p]===100){addLog(`${p==0?'Blue':'Red/Comp'} wins!`);return;}
+  currentPlayer=1-currentPlayer;
+  turnName.textContent=currentPlayer==0?'Blue':(gameMode==='ai'?'Computer':'Red');
   updateDiceColor();
-
-  if(gameMode==='ai' && currentPlayer===1){
-    await new Promise(r=>setTimeout(r, aiDelay));
-    const roll = Math.floor(Math.random()*6)+1;
-    await movePlayer(1, roll);
+  if(gameMode==='ai'&&currentPlayer===1){
+    await new Promise(r=>setTimeout(r,aiDelay));
+    const roll=Math.floor(Math.random()*6)+1;
+    await movePlayer(1,roll);
   }
-
   rolling=false;
 }
 
 function updateDiceColor(){
-  dice.style.background = currentPlayer==0?'var(--blue)':'var(--red)';
+  dice.style.background=currentPlayer==0?'var(--blue)':'var(--red)';
 }
 
-/* ===== Mode & Reset ===== */
+/* === Modes & Reset === */
 btnTwo.addEventListener('click',()=>{gameMode='two';highlightModes();resetGame();});
 btnAI.addEventListener('click',()=>{gameMode='ai';highlightModes();resetGame();});
 resetBtn.addEventListener('click',resetGame);
@@ -376,13 +365,13 @@ function resetGame(){
   updateDiceColor();
 }
 
-/* ===== Resize tokens ===== */
-window.addEventListener('resize', ()=>{
-  placeToken(tokenBlue, positions[0]);
-  placeToken(tokenRed, positions[1]);
+/* Resize reposition tokens */
+window.addEventListener('resize',()=>{
+  placeToken(tokenBlue,positions[0]);
+  placeToken(tokenRed,positions[1]);
 });
 
-/* Initial placement */
+/* Init */
 updateStats();
 placeToken(tokenBlue,0);
 placeToken(tokenRed,0);
@@ -390,8 +379,8 @@ updateDiceColor();
 highlightModes();
 
 /* Prevent Ctrl+U */
-document.addEventListener("keydown", function(e) {
-  if (e.ctrlKey && (e.key === "u" || e.key === "U")) {
+document.addEventListener("keydown",function(e){
+  if(e.ctrlKey&&(e.key==="u"||e.key==="U")){
     e.preventDefault();
     alert("You are not allowed to copy content or view source!");
   }
@@ -399,4 +388,3 @@ document.addEventListener("keydown", function(e) {
 </script>
 </body>
 </html>
-
