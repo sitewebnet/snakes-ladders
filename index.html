@@ -4,62 +4,72 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />  
 <title>Snakes & Ladders — Modern (Custom)</title>
+<link rel="manifest" href="./manifest.json">
 <link rel="icon" type="image/jpeg" href="./favicon1.jpeg">  
+
 <style>
-  :root{
+  :root {
     --bg1: #071026;
     --bg2: #081329;
     --glass: rgba(255,255,255,0.04);
     --muted: rgba(255,255,255,0.7);
   }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#e8f0ff;overflow:hidden}
-  .game-wrapper{
-    width:100vw;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    transform-origin:center center;
-    transition:transform .5s ease,width .5s,height .5s;
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    background: linear-gradient(180deg, var(--bg1), var(--bg2));
+    color: #e8f0ff;
+    overflow: hidden;
   }
-  .rotated{
-    transform:rotate(90deg) translateY(-100%);
-    width:100vh;
-    height:100vw;
+  .game-wrapper {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform-origin: center center;
+    transition: transform .5s ease, width .5s, height .5s;
   }
-  .wrap{max-width:1180px;margin:28px auto;padding:18px;display:grid;grid-template-columns:1fr 380px;gap:18px;align-items:start}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:12px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(2,6,23,0.6)}
-  .title{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-  .title h1{font-size:20px;margin:0}
-  .subtitle{font-size:13px;color:var(--muted)}
-  .board-wrap{position:relative;padding:10px}
-  .board{width:720px;height:720px;max-width:100%;border-radius:12px;overflow:hidden;position:relative;border:6px solid rgba(255,255,255,0.04);background:#000;box-shadow:0 18px 40px rgba(2,6,23,0.6)}
-  .board img{display:block;width:100%;height:100%;object-fit:cover;filter:contrast(1.02) saturate(1.05)}
-  .grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(10,1fr);pointer-events:none}
-  .cell .idx{display:none}
-  .token{position:absolute;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;box-shadow:0 10px 28px rgba(2,6,23,0.6);border:3px solid rgba(255,255,255,0.9);transform:translate(-50%,-50%);transition:left 420ms cubic-bezier(.2,.9,.3,1),top 420ms cubic-bezier(.2,.9,.3,1),transform 420ms}
-  .token.blue{background:linear-gradient(180deg,#3b82f6,#2563eb)}
-  .token.red{background:linear-gradient(180deg,#fb7185,#ef4444)}
-  .token .label{font-size:13px;letter-spacing:0.5px}
-  .controls{display:flex;flex-direction:column;gap:12px}
-  .dice{width:120px;height:120px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:white;cursor:pointer;user-select:none;border:4px solid rgba(255,255,255,0.05);box-shadow:0 14px 40px rgba(2,6,23,0.6);transition:transform .9s cubic-bezier(.22,.9,.3,1)}
-  .dice.rolling{transform:rotate(720deg) scale(1.02)}
-  .dice .small{font-size:13px;opacity:0.95}
-  .meta{display:flex;gap:8px;align-items:center}
-  .pill{padding:8px 10px;border-radius:999px;background:rgba(255,255,255,0.03);font-weight:700}
-  .log{background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;max-height:180px;overflow:auto;font-size:13px}
-  .donate{background:linear-gradient(90deg,#fff7ed,#fff1e6);color:#1f2937;padding:12px;border-radius:10px}
-  .donate .till{font-weight:900;font-size:20px}
-  .copy{background:#f59e0b;padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:800}
-  .small-muted{font-size:12px;color:rgba(255,255,255,0.75)}
-  .btn{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.03);cursor:pointer}
-  .winner-banner{position:absolute;left:50%;top:12px;transform:translateX(-50%);padding:10px 18px;border-radius:999px;background:linear-gradient(90deg,#fef3c7,#fde68a);color:#111;font-weight:900;display:none;z-index:60}
-  .highlight-burst{position:absolute;pointer-events:none;border-radius:999px;box-shadow:0 6px 28px rgba(255,255,255,0.12);opacity:0;transform:scale(0.85);transition:opacity 260ms, transform 260ms}
-  @media (max-width:1100px){.wrap{grid-template-columns:1fr;gap:14px}.board{height:min(90vw,720px)}}
+  .rotated {
+    transform: rotate(90deg) translateY(-100%);
+    width: 100vh;
+    height: 100vw;
+  }
+  .wrap { max-width: 1180px; margin: 28px auto; padding: 18px; display: grid; grid-template-columns: 1fr 380px; gap: 18px; align-items: start; }
+  .card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius: 14px; padding: 12px; border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 8px 30px rgba(2,6,23,0.6); }
+  .title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .title h1 { font-size: 20px; margin: 0; }
+  .subtitle { font-size: 13px; color: var(--muted); }
+  .board-wrap { position: relative; padding: 10px; }
+  .board { width: 720px; height: 720px; max-width: 100%; border-radius: 12px; overflow: hidden; position: relative; border: 6px solid rgba(255,255,255,0.04); background: #000; box-shadow: 0 18px 40px rgba(2,6,23,0.6); }
+  .board img { display: block; width: 100%; height: 100%; object-fit: cover; filter: contrast(1.02) saturate(1.05); }
+  .grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(10,1fr); grid-template-rows: repeat(10,1fr); pointer-events: none; }
+  .cell .idx { display: none; }
+  .token { position: absolute; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; box-shadow: 0 10px 28px rgba(2,6,23,0.6); border: 3px solid rgba(255,255,255,0.9); transform: translate(-50%,-50%); transition: left 420ms cubic-bezier(.2,.9,.3,1), top 420ms cubic-bezier(.2,.9,.3,1), transform 420ms; }
+  .token.blue { background: linear-gradient(180deg,#3b82f6,#2563eb); }
+  .token.red { background: linear-gradient(180deg,#fb7185,#ef4444); }
+  .token .label { font-size: 13px; letter-spacing: 0.5px; }
+  .controls { display: flex; flex-direction: column; gap: 12px; }
+  .dice { width: 120px; height: 120px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 900; color: white; cursor: pointer; user-select: none; border: 4px solid rgba(255,255,255,0.05); box-shadow: 0 14px 40px rgba(2,6,23,0.6); transition: transform .9s cubic-bezier(.22,.9,.3,1); }
+  .dice.rolling { transform: rotate(720deg) scale(1.02); }
+  .dice .small { font-size: 13px; opacity: 0.95; }
+  .meta { display: flex; gap: 8px; align-items: center; }
+  .pill { padding: 8px 10px; border-radius: 999px; background: rgba(255,255,255,0.03); font-weight: 700; }
+  .log { background: rgba(255,255,255,0.02); padding: 10px; border-radius: 10px; max-height: 180px; overflow: auto; font-size: 13px; }
+  .donate { background: linear-gradient(90deg,#fff7ed,#fff1e6); color: #1f2937; padding: 12px; border-radius: 10px; }
+  .donate .till { font-weight: 900; font-size: 20px; }
+  .copy { background: #f59e0b; padding: 8px 12px; border-radius: 10px; border: none; cursor: pointer; font-weight: 800; }
+  .small-muted { font-size: 12px; color: rgba(255,255,255,0.75); }
+  .btn { padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.03); cursor: pointer; }
+  .winner-banner { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); padding: 10px 18px; border-radius: 999px; background: linear-gradient(90deg,#fef3c7,#fde68a); color: #111; font-weight: 900; display: none; z-index: 60; }
+  .highlight-burst { position: absolute; pointer-events: none; border-radius: 999px; box-shadow: 0 6px 28px rgba(255,255,255,0.12); opacity: 0; transform: scale(0.85); transition: opacity 260ms, transform 260ms; }
+  @media (max-width:1100px){ .wrap { grid-template-columns: 1fr; gap: 14px; } .board { height: min(90vw, 720px); } }
 </style>
 </head>
 <body>
+
 <div class="game-wrapper">
   <div class="wrap">
     <div class="card board-wrap">
@@ -137,67 +147,174 @@
 </div>
 
 <script>
+  // --- Game Logic (same as before) ---
   const BOARD_SIZE=10;
   const gridEl=document.getElementById('grid');
   const cells=[];
-  for(let r=0;r<BOARD_SIZE;r++){for(let c=0;c<BOARD_SIZE;c++){const div=document.createElement('div');div.className='cell';const idx=document.createElement('div');idx.className='idx';const number=calcCellNumber(r,c);idx.textContent=number;div.appendChild(idx);div.dataset.num=number;gridEl.appendChild(div);cells[number]=div;}}
-  function calcCellNumber(row,col){const rFromBottom=(BOARD_SIZE-1)-row;const base=rFromBottom*BOARD_SIZE;if(rFromBottom%2===0)return base+col+1;return base+(BOARD_SIZE-col);}
-  const board=document.getElementById('board');
-  function getCellCenter(num){const rect=board.getBoundingClientRect();if(!cells[num])return{x:rect.width*0.05,y:rect.height*0.95};const crect=cells[num].getBoundingClientRect();const x=crect.left-rect.left+crect.width/2;const y=crect.top-rect.top+crect.height/2;return{x,y};}
-  const LADDERS={3:45,8:12,14:26,21:39,31:73,59:80,90:92,83:97};
-  const SNAKES={99:41,95:67,89:85,78:15,57:2,54:27,11:6};
-  let positions=[0,0],currentPlayer=0,moves=0;
-  const tokenBlue=document.getElementById('token-blue'),tokenRed=document.getElementById('token-red'),
-  dice=document.getElementById('dice'),diceVal=document.getElementById('diceVal'),
-  turnName=document.getElementById('turnName'),blueStat=document.getElementById('blueStat'),
-  redStat=document.getElementById('redStat'),logEl=document.getElementById('log'),
-  movesCountEl=document.getElementById('movesCount'),winnerBanner=document.getElementById('winnerBanner'),
-  burst=document.getElementById('burst'),resetBtn=document.getElementById('resetBtn');
-  setDiceColor();updateStats();placeToken('blue',0);placeToken('red',0);
-
-  function placeToken(which,num){const el=which==='blue'?tokenBlue:tokenRed;const {x,y}=num>0?getCellCenter(num):{x:board.clientWidth*(which==='blue'?0.08:0.14),y:board.clientHeight*0.95};el.style.left=x+'px';el.style.top=y+'px';}
-  window.addEventListener('resize',()=>{placeToken('blue',positions[0]);placeToken('red',positions[1]);});
-  async function animatePath(playerIndex,pathNums){const el=playerIndex===0?tokenBlue:tokenRed;for(let n of pathNums){const {x,y}=n>0?getCellCenter(n):{x:board.clientWidth*(playerIndex===0?0.08:0.14),y:board.clientHeight*0.95};el.style.transform='translate(-50%,-60%) scale(1.03)';el.style.left=x+'px';el.style.top=y+'px';await sleep(300);el.style.transform='translate(-50%,-50%) scale(1)';await sleep(120);}}
-  async function animateJump(playerIndex,fromNum,toNum,type){const el=playerIndex===0?tokenBlue:tokenRed;const start=getCellCenter(fromNum);const end=getCellCenter(toNum);showBurst((start.x+end.x)/2,(start.y+end.y)/2);el.style.transition='transform 420ms, left 420ms, top 420ms';el.style.transform='translate(-50%,-70%) scale(1.08)';el.style.left=end.x+'px';el.style.top=end.y+'px';await sleep(520);el.style.transform='translate(-50%,-50%) scale(1)';await sleep(120);}
-  function showBurst(x,y){burst.style.left=x+'px';burst.style.top=y+'px';burst.style.opacity='1';burst.style.transform='translate(-50%,-50%) scale(1)';setTimeout(()=>{burst.style.opacity='0';burst.style.transform='translate(-50%,-50%) scale(0.85)';},480);}
-  let rolling=false;dice.addEventListener('click',async()=>{if(rolling)return;if(positions[0]===100||positions[1]===100){alert('Game over. Reset to play again.');return;}rolling=true;dice.classList.add('rolling');setDiceColor(true);const result=Math.floor(Math.random()*6)+1;diceVal.textContent='...';await sleep(720);diceVal.textContent=result;dice.classList.remove('rolling');rolling=false;moves++;movesCountEl.textContent='Moves: '+moves;await handleMove(result);});
-  async function handleMove(roll){const p=currentPlayer;const start=positions[p];let target=start+roll;if(target>100){addLog(`${playerName(p)} rolled ${roll} — can't pass 100 (stays ${start})`);switchTurn();return;}addLog(`${playerName(p)} rolled ${roll} — moving to ${target}`);const path=[];for(let s=start+1;s<=target;s++)path.push(s);await animatePath(p,path);positions[p]=target;updateStats();if(LADDERS[target]){const dest=LADDERS[target];addLog(`${playerName(p)} landed on a ladder! climbing to ${dest}`);await animateJump(p,target,dest,'ladder');positions[p]=dest;updateStats();if(SNAKES[dest]){const down=SNAKES[dest];addLog(`${playerName(p)} immediately hit a snake at ${dest} -> ${down}`);await animateJump(p,dest,down,'snake');positions[p]=down;updateStats();}}else if(SNAKES[target]){const dest=SNAKES[target];addLog(`${playerName(p)} landed on a snake! sliding to ${dest}`);await animateJump(p,target,dest,'snake');positions[p]=dest;updateStats();}if(positions[p]===100){declareWinner(p);return;}switchTurn();}
-  function switchTurn(){currentPlayer=1-currentPlayer;turnName.textContent=currentPlayer===0?'Blue':'Red';setDiceColor();}
-  function setDiceColor(instantly){dice.style.background=currentPlayer===0?'linear-gradient(180deg,#3b82f6,#2563eb)':'linear-gradient(180deg,#fb7185,#ef4444)';if(instantly){dice.style.transition='none';setTimeout(()=>dice.style.transition='',100);}}
-  function updateStats(){blueStat.textContent=`Blue: ${positions[0]}`;redStat.textContent=`Red: ${positions[1]}`;placeToken('blue',positions[0]);placeToken('red',positions[1]);}
-  function playerName(i){return i===0?'Blue':'Red';}
-  function addLog(text){const d=document.createElement('div');d.textContent=`${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} • ${text}`;logEl.prepend(d);while(logEl.children.length>8)logEl.removeChild(logEl.lastChild);}
-  function declareWinner(playerIndex){addLog(`${playerName(playerIndex)} reached 100 — wins!`);winnerBanner.style.display='block';winnerBanner.textContent=`${playerName(playerIndex)} wins! 🎉`;confettiBurst();}
-  function sleep(ms){return new Promise(res=>setTimeout(res,ms));}
-  document.getElementById('copyBtn').addEventListener('click',async()=>{try{await navigator.clipboard.writeText('4713786');const btn=document.getElementById('copyBtn');btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1400);}catch(e){alert('Copy failed — please copy manually: 4713786');}});
-  resetBtn.addEventListener('click',()=>{positions=[0,0];currentPlayer=0;moves=0;diceVal.textContent='—';turnName.textContent='Blue';winnerBanner.style.display='none';movesCountEl.textContent='Moves: 0';logEl.innerHTML='No moves yet';updateStats();setDiceColor();});
-  function confettiBurst(){const w=board.clientWidth,h=board.clientHeight;const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;canvas.style.position='absolute';canvas.style.left=0;canvas.style.top=0;canvas.style.zIndex=80;board.appendChild(canvas);const ctx=canvas.getContext('2d');const pieces=[];for(let i=0;i<60;i++){pieces.push({x:Math.random()*w,y:Math.random()*-h,vx:(Math.random()-.5)*6,vy:2+Math.random()*6,size:6+Math.random()*8,color:['#f97316','#60a5fa','#f472b6','#34d399','#fef08a'][Math.floor(Math.random()*5)],rot:Math.random()*Math.PI});}let t=0;function drawFrame(){t++;ctx.clearRect(0,0,w,h);for(const p of pieces){p.x+=p.vx;p.y+=p.vy;p.rot+=.1;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.color;ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);ctx.restore();}if(t<140)requestAnimationFrame(drawFrame);else canvas.remove();}drawFrame();}
-  const boardImg=document.getElementById('boardImg');if(boardImg.complete)updateStats();else boardImg.addEventListener('load',updateStats);
-
-  const wrapper=document.querySelector('.game-wrapper');
-  function handleOrientation(){
-    if(window.innerHeight>window.innerWidth){
-      wrapper.classList.add('rotated');
-    }else{
-      wrapper.classList.remove('rotated');
+  for(let r=0;r<BOARD_SIZE;r++){
+    for(let c=0;c<BOARD_SIZE;c++){
+      const div=document.createElement('div');
+      div.className='cell';
+      const idx=document.createElement('div');
+      idx.className='idx';
+      const number=calcCellNumber(r,c);
+      idx.textContent=number;
+      div.appendChild(idx);
+      div.dataset.num=number;
+      gridEl.appendChild(div);
+      cells[number]=div;
     }
   }
-  window.addEventListener('resize',handleOrientation);
-  window.addEventListener('orientationchange',handleOrientation);
-  handleOrientation();
+  function calcCellNumber(row,col){
+    const rFromBottom=(BOARD_SIZE-1)-row;
+    const base=rFromBottom*BOARD_SIZE;
+    return rFromBottom%2===0?base+col+1:base+(BOARD_SIZE-col);
+  }
+
+  const board=document.getElementById('board');
+  function getCellCenter(num){
+    const rect=board.getBoundingClientRect();
+    if(!cells[num])return{x:rect.width*0.05,y:rect.height*0.95};
+    const crect=cells[num].getBoundingClientRect();
+    const x=crect.left-rect.left+crect.width/2;
+    const y=crect.top-rect.top+crect.height/2;
+    return{x,y};
+  }
+
+  const LADDERS={3:45,8:12,14:26,21:39,31:73,59:80,90:92,83:97};
+  const SNAKES={99:41,95:67,89:85,57:2,54:27,11:6};
+  let positions=[0,0],currentPlayer=0,moves=0;
+  const tokenBlue=document.getElementById('token-blue'),
+        tokenRed=document.getElementById('token-red'),
+        dice=document.getElementById('dice'),
+        diceVal=document.getElementById('diceVal'),
+        turnName=document.getElementById('turnName'),
+        blueStat=document.getElementById('blueStat'),
+        redStat=document.getElementById('redStat'),
+        logEl=document.getElementById('log'),
+        movesCountEl=document.getElementById('movesCount'),
+        winnerBanner=document.getElementById('winnerBanner'),
+        burst=document.getElementById('burst'),
+        resetBtn=document.getElementById('resetBtn');
+
+  setDiceColor();updateStats();placeToken('blue',0);placeToken('red',0);
+
+  function placeToken(which,num){
+    const el=which==='blue'?tokenBlue:tokenRed;
+    const {x,y}=num>0?getCellCenter(num):{x:board.clientWidth*(which==='blue'?0.08:0.14),y:board.clientHeight*0.95};
+    el.style.left=x+'px';
+    el.style.top=y+'px';
+  }
+
+  window.addEventListener('resize',()=>{placeToken('blue',positions[0]);placeToken('red',positions[1]);});
+
+  async function animatePath(playerIndex,pathNums){
+    const el=playerIndex===0?tokenBlue:tokenRed;
+    for(let n of pathNums){
+      const {x,y}=n>0?getCellCenter(n):{x:board.clientWidth*(playerIndex===0?0.08:0.14),y:board.clientHeight*0.95};
+      el.style.transform='translate(-50%,-60%) scale(1.03)';
+      el.style.left=x+'px';el.style.top=y+'px';
+      await sleep(300);
+      el.style.transform='translate(-50%,-50%) scale(1)';
+      await sleep(120);
+    }
+  }
+
+  async function animateJump(playerIndex,fromNum,toNum,type){
+    const el=playerIndex===0?tokenBlue:tokenRed;
+    const start=getCellCenter(fromNum);
+    const end=getCellCenter(toNum);
+    showBurst((start.x+end.x)/2,(start.y+end.y)/2);
+    el.style.transform='translate(-50%,-70%) scale(1.08)';
+    el.style.left=end.x+'px';
+    el.style.top=end.y+'px';
+    await sleep(520);
+    el.style.transform='translate(-50%,-50%) scale(1)';
+    await sleep(120);
+  }
+
+  function showBurst(x,y){
+    burst.style.left=x+'px';
+    burst.style.top=y+'px';
+    burst.style.opacity='1';
+    burst.style.transform='translate(-50%,-50%) scale(1)';
+    setTimeout(()=>{burst.style.opacity='0';burst.style.transform='translate(-50%,-50%) scale(0.85)';},480);
+  }
+
+  let rolling=false;
+  dice.addEventListener('click',async()=>{
+    if(rolling)return;
+    if(positions[0]===100||positions[1]===100){alert('Game over. Reset to play again.');return;}
+    rolling=true;
+    dice.classList.add('rolling');
+    setDiceColor(true);
+    const result=Math.floor(Math.random()*6)+1;
+    diceVal.textContent='...';
+    await sleep(720);
+    diceVal.textContent=result;
+    dice.classList.remove('rolling');
+    rolling=false;
+    moves++;
+    movesCountEl.textContent='Moves: '+moves;
+    await handleMove(result);
+  });
+
+  async function handleMove(roll){
+    const p=currentPlayer;
+    const start=positions[p];
+    let target=start+roll;
+    if(target>100){addLog(`${playerName(p)} rolled ${roll} — can't pass 100`);switchTurn();return;}
+    addLog(`${playerName(p)} rolled ${roll} — moving to ${target}`);
+    const path=[];for(let s=start+1;s<=target;s++)path.push(s);
+    await animatePath(p,path);
+    positions[p]=target;
+    updateStats();
+    if(LADDERS[target]){
+      const dest=LADDERS[target];
+      addLog(`${playerName(p)} climbed a ladder to ${dest}`);
+      await animateJump(p,target,dest,'ladder');
+      positions[p]=dest;updateStats();
+    }else if(SNAKES[target]){
+      const dest=SNAKES[target];
+      addLog(`${playerName(p)} slid down a snake to ${dest}`);
+      await animateJump(p,target,dest,'snake');
+      positions[p]=dest;updateStats();
+    }
+    if(positions[p]===100){declareWinner(p);return;}
+    switchTurn();
+  }
+
+  function switchTurn(){currentPlayer=1-currentPlayer;turnName.textContent=currentPlayer===0?'Blue':'Red';setDiceColor();}
+  function setDiceColor(instantly){dice.style.background=currentPlayer===0?'linear-gradient(180deg,#3b82f6,#2563eb)':'linear-gradient(180deg,#fb7185,#ef4444)';if(instantly)dice.style.transition='none';setTimeout(()=>dice.style.transition='',50);}
+  function updateStats(){blueStat.textContent='Blue: '+positions[0];redStat.textContent='Red: '+positions[1];}
+  function addLog(msg){logEl.innerHTML+=`<div>${msg}</div>`;logEl.scrollTop=logEl.scrollHeight;}
+  function playerName(i){return i===0?'Blue':'Red';}
+  function declareWinner(p){winnerBanner.style.display='block';winnerBanner.textContent=playerName(p)+' Wins!';addLog(`<b>${playerName(p)} Wins! 🎉</b>`);}
+  function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+  resetBtn.addEventListener('click',()=>location.reload());
+  document.getElementById('copyBtn').addEventListener('click',()=>{navigator.clipboard.writeText('4713786');alert('Till number copied');});
+  
+  // --- Orientation Feature ---
+  async function requestLandscapeMode(){
+    if(screen.orientation&&screen.orientation.lock){
+      try{
+        const allow=confirm("Rotate screen for better game experience?");
+        if(!allow)return;
+        if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();
+        await screen.orientation.lock("landscape");
+        console.log("Orientation locked to landscape");
+      }catch(err){console.warn("Orientation lock failed:",err);}
+    }
+  }
+  window.addEventListener("load",()=>{if(/Mobi|Android/i.test(navigator.userAgent))setTimeout(requestLandscapeMode,1500);});
 </script>
-</script>
-    <script>
-         document.addEventListener("keydown", function(e) {
-           if (e.ctrlKey && (e.key === "u" || e.key === "U")) {
-             e.preventDefault();
-             alert("You are not allowed to copy content or view source!");
-           }
-         });
-    </script>  
+<script>
+  document.addEventListener("keydown", function(e) {
+    if (e.ctrlKey && (e.key === "u" || e.key === "U")) {
+      e.preventDefault();
+      alert("You are not allowed to copy content or view source!");
+    }
+  });
+</script>  
 </body>
 </html>
-
-
-
-
