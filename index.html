@@ -13,22 +13,15 @@
   --card-bg: rgba(255,255,255,0.05);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
+* { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
   overflow: hidden;
   font-family: 'Inter', sans-serif;
   background: linear-gradient(180deg, #030712, #111827);
   color: #fff;
 }
 
-/* Layout */
 .main {
   display: flex;
   width: 100vw;
@@ -58,19 +51,12 @@ html, body {
 /* Stack on mobile */
 @media (max-width: 900px) {
   .main { flex-direction: column; }
-  .containerA, .containerB {
-    width: 100%;
-    flex: none;
-    height: 50%;
-  }
+  .containerA, .containerB { width: 100%; flex: none; height: 50%; }
 }
 
 /* Buttons */
 .btn-group {
-  display: flex;
-  justify-content: center;
-  gap: 0.4rem;
-  flex-wrap: wrap;
+  display: flex; justify-content: center; gap: 0.4rem; flex-wrap: wrap;
 }
 .btn {
   background: var(--card-bg);
@@ -135,7 +121,7 @@ html, body {
   font-weight: bold;
   box-shadow: 0 4px 10px rgba(0,0,0,0.6);
   transform: translate(-50%, -50%);
-  transition: all 0.4s ease;
+  transition: left 0.3s linear, top 0.3s linear;
 }
 .token.blue { background: var(--blue); }
 .token.red { background: var(--red); }
@@ -154,9 +140,15 @@ html, body {
   font-weight: bold;
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-  transition: transform 0.6s, background 0.3s;
+  transition: transform 0.6s ease, background 0.3s;
 }
-.dice.rolling { transform: rotate(720deg); }
+.dice.rolling {
+  animation: rollClockwise 1s linear;
+}
+@keyframes rollClockwise {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 .dice span { font-size: 20px; margin-top: 4px; }
 
 /* Sidebar sections */
@@ -301,49 +293,63 @@ dice.addEventListener('click',async()=>{
   dice.classList.add('rolling');
   const roll=Math.floor(Math.random()*6)+1;
   diceVal.textContent='...';
-  await new Promise(r=>setTimeout(r,1000));
+  await sleep(1000);
   dice.classList.remove('rolling');
   diceVal.textContent=roll;
 
-  // Wait 2 seconds before moving
-  await new Promise(r=>setTimeout(r,2000));
+  await sleep(2000);
   await movePlayer(currentPlayer,roll);
 });
 
 async function movePlayer(p,roll){
-  let pos=positions[p]+roll;
-  if(pos>100)pos=positions[p];
-  positions[p]=pos;
-  addLog(`${p==0?'Blue':'Red/Comp'} rolled ${roll} → ${pos}`);
-  placeToken(p===0?tokenBlue:tokenRed,pos);
-  updateStats();
-  if(LADDERS[pos]){
-    positions[p]=LADDERS[pos];
-    addLog('🎯 Ladder to '+LADDERS[pos]);
-  }else if(SNAKES[pos]){
-    positions[p]=SNAKES[pos];
-    addLog('🐍 Snake to '+SNAKES[pos]);
+  const start=positions[p];
+  let target=start+roll;
+  if(target>100){addLog(`${playerName(p)} rolled ${roll} → can't move`);switchTurn();return;}
+  addLog(`${playerName(p)} rolled ${roll}`);
+  const path=[];
+  for(let i=start+1;i<=target;i++){path.push(i);}
+  for(let step of path){
+    await sleep(300);
+    placeToken(p===0?tokenBlue:tokenRed,step);
   }
-  placeToken(p===0?tokenBlue:tokenRed,positions[p]);
+  positions[p]=target;
   updateStats();
-  if(positions[p]===100){addLog(`${p==0?'Blue':'Red/Comp'} wins!`);rolling=false;return;}
-  
-  currentPlayer=1-currentPlayer;
-  turnName.textContent=currentPlayer==0?'Blue':(gameMode==='ai'?'Computer':'Red');
-  updateDiceColor();
+  await sleep(400);
 
+  if(LADDERS[target]){
+    addLog('🎯 Ladder to '+LADDERS[target]);
+    positions[p]=LADDERS[target];
+    placeToken(p===0?tokenBlue:tokenRed,positions[p]);
+  }else if(SNAKES[target]){
+    addLog('🐍 Snake to '+SNAKES[target]);
+    positions[p]=SNAKES[target];
+    placeToken(p===0?tokenBlue:tokenRed,positions[p]);
+  }
+
+  updateStats();
+  if(positions[p]===100){addLog(`${playerName(p)} wins! 🎉`);rolling=false;return;}
+
+  switchTurn();
   if(gameMode==='ai'&&currentPlayer===1){
-    await new Promise(r=>setTimeout(r,aiDelay));
+    await sleep(aiDelay);
     const roll=Math.floor(Math.random()*6)+1;
+    dice.classList.add('rolling');
     diceVal.textContent='...';
-    await new Promise(r=>setTimeout(r,1000));
+    await sleep(1000);
+    dice.classList.remove('rolling');
     diceVal.textContent=roll;
-    await new Promise(r=>setTimeout(r,2000));
+    await sleep(2000);
     await movePlayer(1,roll);
   }
   rolling=false;
 }
 
+function playerName(i){return i===0?'Blue':'Red/Comp';}
+function switchTurn(){
+  currentPlayer=1-currentPlayer;
+  turnName.textContent=playerName(currentPlayer);
+  updateDiceColor();
+}
 function updateDiceColor(){
   dice.style.background=currentPlayer==0?'var(--blue)':'var(--red)';
 }
@@ -369,6 +375,7 @@ window.addEventListener('resize',()=>{
   placeToken(tokenRed,positions[1]);
 });
 
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 updateStats();
 placeToken(tokenBlue,0);
 placeToken(tokenRed,0);
