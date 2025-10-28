@@ -1,525 +1,294 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-<title>Snakes & Ladders — Modern Responsive</title>
-<link rel="icon" type="image/jpeg" href="./favicon1.jpeg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Snakes & Ladders — Neon Edition</title>
+<link rel="icon" type="image/png" href="./favicon.png">
 <style>
-  :root{
-    --bg1:#071026; --bg2:#081329;
-    --card: rgba(255,255,255,0.03);
-    --muted: rgba(255,255,255,0.75);
-    --blue1:#3b82f6; --blue2:#2563eb;
-    --red1:#fb7185; --red2:#ef4444;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#e8f0ff;overflow:hidden}
-
-  /* Viewport centers everything and prevents scrolling */
-  .viewport{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;padding:1vmin}
-
-  /* Main layout: left = big (board+mode buttons), right = slim (dice, log, donate, rules) */
-  .layout{width:min(1180px,98vw);height:min(820px,96vh);display:grid;grid-template-columns:1fr 360px;gap:12px;align-items:start}
-  @media (max-width:980px){ .layout{grid-template-columns:1fr;grid-auto-rows:1fr;gap:8px;height:98vh} }
-
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:10px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(2,6,23,0.6);overflow:hidden}
-
-  /* Title row */
-  .title{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-  .title h1{font-size:18px;margin:0}
-  .subtitle{font-size:12px;color:var(--muted)}
-
-  /* Left panel (big) */
-  .left{display:flex;flex-direction:column;gap:8px;height:100%}
-  .modes{display:flex;gap:8px;align-items:center}
-  .mode-btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;cursor:pointer;font-weight:800}
-  .mode-btn.active{background:linear-gradient(90deg,var(--blue1),var(--blue2));color:#fff;border:none}
-  .reset-btn{padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);cursor:pointer}
-
-  /* Board container (keeps a perfect square and scales) */
-  .board-wrap{flex:1;display:flex;align-items:center;justify-content:center}
-  .board{
-    width:100%;
-    max-width:calc(100% - 6px);
-    max-height:calc(100% - 6px);
-    aspect-ratio:1/1;
-    border-radius:10px;
-    overflow:hidden;
-    border:6px solid rgba(255,255,255,0.04);
-    background:#000;
-    display:block;
-    position:relative;
-  }
-  /* Ensures full board always visible (never cropped) */
-  .board img{width:100%;height:100%;object-fit:contain;display:block;background:#061025}
-
-  /* Invisible grid overlay for mapping cells */
-  .grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(10,1fr);pointer-events:none}
-  .cell .idx{display:none}
-
-  /* Tokens */
-  .token{position:absolute;width:6.2%;aspect-ratio:1/1;border-radius:999px;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;border:3px solid rgba(255,255,255,0.9);box-shadow:0 10px 28px rgba(2,6,23,0.6);transform:translate(-50%,-50%);transition:left 320ms linear,top 320ms linear,transform 240ms;z-index:50}
-  .token.blue{background:linear-gradient(180deg,var(--blue1),var(--blue2))}
-  .token.red{background:linear-gradient(180deg,var(--red1),var(--red2))}
-
-  /* Right panel (slim) */
-  .right{display:flex;flex-direction:column;gap:10px;height:100%}
-  .dice{
-    width:110px;height:110px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;color:white;font-size:24px;border:4px solid rgba(255,255,255,0.05);box-shadow:0 14px 40px rgba(2,6,23,0.6);cursor:pointer;user-select:none;transition:transform 1s linear;
-    margin:6px auto;
-  }
-  .dice.spin{animation:spinCW 900ms linear}
-  @keyframes spinCW{from{transform:rotate(0deg)}to{transform:rotate(720deg)}}
-
-  .small{font-size:12px;opacity:0.95}
-  .pills{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-  .pill{padding:8px 10px;border-radius:999px;background:rgba(255,255,255,0.03);font-weight:700}
-
-  .log{background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;max-height:240px;overflow:auto;font-size:13px;color:#dbeafe}
-
-  .donate{background:linear-gradient(90deg,#fff7ed,#fff1e6);color:#111;padding:10px;border-radius:8px}
-  .copy{background:#f59e0b;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
-
-  .rules{font-size:13px;color:var(--muted)}
-
-  /* Responsive tweaks */
-  @media (max-width:980px){
-    .pills{justify-content:space-between}
-    .dice{width:86px;height:86px;font-size:20px}
-    .token{width:7.6%}
-  }
+:root {
+  --bg1: #040b1a;
+  --bg2: #0a1226;
+  --accent-blue: #3b82f6;
+  --accent-red: #ef4444;
+  --glass: rgba(255,255,255,0.05);
+}
+* { box-sizing: border-box; }
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: radial-gradient(circle at center, var(--bg1), var(--bg2));
+  color: #e8f0ff;
+  overflow: hidden;
+}
+.wrapper {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  flex-wrap: wrap;
+}
+.container-board {
+  flex: 3;
+  min-width: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(145deg, #050d23, #070f29);
+  position: relative;
+}
+.container-controls {
+  flex: 1;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(180deg, #0c162f, #050c1a);
+  padding: 15px;
+  box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
+  border-left: 2px solid rgba(255,255,255,0.1);
+}
+.board {
+  position: relative;
+  width: 90%;
+  max-width: 720px;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 3px solid rgba(255,255,255,0.1);
+  box-shadow: 0 0 30px rgba(0,0,0,0.6);
+}
+.board img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(10,1fr);
+  grid-template-rows: repeat(10,1fr);
+  pointer-events: none;
+}
+.token {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 800;
+  border: 2px solid white;
+  transform: translate(-50%,-50%);
+  transition: top .4s, left .4s;
+}
+.token.blue { background: var(--accent-blue); }
+.token.red { background: var(--accent-red); }
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+button {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+button:hover { background: rgba(255,255,255,0.15); }
+.dice {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  font-size: 28px;
+  font-weight: 900;
+  border: 3px solid rgba(255,255,255,0.08);
+  cursor: pointer;
+  transition: transform 1s cubic-bezier(.3,1,.3,1);
+}
+.dice.rolling { transform: rotate(720deg) scale(1.05); }
+.log {
+  background: rgba(255,255,255,0.05);
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  height: 150px;
+  overflow-y: auto;
+}
+footer {
+  font-size: 12px;
+  text-align: center;
+  color: #ccc;
+  opacity: 0.8;
+}
+@keyframes hop {
+  0%,100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -65%) scale(1.05); }
+}
+@media (max-width: 900px) {
+  .wrapper { flex-direction: column; }
+  .container-controls { border-left: none; border-top: 2px solid rgba(255,255,255,0.1); }
+  .board { width: 95%; max-width: 600px; }
+}
 </style>
 </head>
 <body>
-  <div class="viewport">
-    <div class="layout">
-      <!-- LEFT (main) -->
-      <div class="card left">
-        <div class="title">
-          <div>
-            <h1>Snakes & Ladders</h1>
-            <div class="subtitle">Blue vs Red — First to 100 wins</div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <button id="resetBtn" class="reset-btn">Reset</button>
-            <div id="movesCount" style="font-size:12px;color:var(--muted)">Moves: 0</div>
-          </div>
-        </div>
 
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="modes">
-            <button id="modeTwo" class="mode-btn">Two Players</button>
-            <button id="modeAI" class="mode-btn active">Play vs Computer</button>
-          </div>
-        </div>
-
-        <div class="board-wrap">
-          <div class="board" id="board">
-            <img id="boardImg" src="./snakes.jpg" alt="Board" crossorigin="anonymous" />
-            <div id="grid" class="grid"></div>
-
-            <div id="token-blue" class="token blue" style="left:8%;top:88%"><div style="font-size:12px">B</div></div>
-            <div id="token-red"  class="token red"  style="left:14%;top:88%"><div style="font-size:12px">R</div></div>
-
-            <div id="winnerBanner" style="position:absolute;left:50%;top:10px;transform:translateX(-50%);display:none;background:linear-gradient(90deg,#fef3c7,#fde68a);color:#111;padding:8px 14px;border-radius:999px;font-weight:900;z-index:60">Winner!</div>
-            <div id="burst" style="position:absolute;width:120px;height:120px;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;opacity:0;border-radius:999px;box-shadow:0 6px 28px rgba(255,255,255,0.12);transition:opacity .26s, transform .26s;"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT (slim) -->
-      <aside class="card right" aria-label="Controls & Info">
-        <div style="text-align:center">
-          <div id="dice" class="dice" title="Click to roll" role="button" aria-pressed="false" tabindex="0">
-            <div style="font-size:12px" class="small">Roll</div>
-            <div id="diceVal" style="font-size:28px">—</div>
-          </div>
-        </div>
-
-        <div class="pills" style="justify-content:center">
-          <div class="pill" id="turnBadge">Turn: <strong id="turnName">Blue</strong></div>
-        </div>
-
-        <div style="display:flex;gap:8px;justify-content:center;margin-top:6px">
-          <div class="pill" id="blueStat">Blue: 0</div>
-          <div class="pill" id="redStat">Red: 0</div>
-        </div>
-
-        <div class="log" id="log" aria-live="polite" style="margin-top:8px">No moves yet</div>
-
-        <div class="donate" style="margin-top:8px">
-          <div style="font-weight:800">Support Us (M-Pesa)</div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
-            <div><div style="font-size:12px">Till number</div><div style="font-weight:900">4713786</div></div>
-            <div><button id="copyBtn" class="copy">Copy</button></div>
-          </div>
-          <div style="font-size:12px;color:#111;margin-top:8px">Use Lipa na M-Pesa → Pay Bill/Till → enter till number and amount.</div>
-        </div>
-
-        <div style="margin-top:10px" class="rules">
-          <div style="font-weight:800">Rules & Notes</div>
-          <ul style="margin:6px 0 0 18px">
-            <li>Roll 1–6, move forward square-by-square.</li>
-            <li>If you land at bottom of ladder, climb to its top instantly.</li>
-            <li>If you land on a snake head, slide down to its tail instantly.</li>
-          </ul>
-        </div>
-      </aside>
+<div class="wrapper">
+  <div class="container-board">
+    <div class="board" id="board">
+      <img src="./snakes.jpg" alt="Snakes and Ladders" id="boardImg">
+      <div class="grid" id="grid"></div>
+      <div class="token blue" id="blueToken">B</div>
+      <div class="token red" id="redToken">R</div>
     </div>
   </div>
 
+  <div class="container-controls">
+    <div class="controls">
+      <h2>🎮 Game Controls</h2>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <button id="vsCompBtn">1 Player vs Computer</button>
+        <button id="twoPlayerBtn">2 Players</button>
+      </div>
+      <div id="turnText" style="text-align:center;font-weight:600;">Turn: Blue</div>
+      <div id="dice" class="dice">🎲</div>
+      <button id="resetBtn">Reset Game</button>
+    </div>
+
+    <div>
+      <div class="log" id="log">No moves yet...</div>
+      <div style="margin-top:10px;background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;">
+        <strong>Support Us (M-Pesa)</strong><br>
+        Till Number: <strong>4713786</strong>
+      </div>
+    </div>
+
+    <footer>Snakes & Ladders Neon — © 2025</footer>
+  </div>
+</div>
+
 <script>
-/* -------------------------
-   Game: Responsive Option B
-   - crypto RNG for dice
-   - clockwise dice spin animation
-   - show number, wait 2s, then step-by-step movement
-   - AI auto-roll after its delay
-   ------------------------- */
-
-const BOARD_SIZE = 10;
-const gridEl = document.getElementById('grid');
-const cells = [];
-
-// build invisible grid (numbers hidden via CSS)
-for(let r=0;r<BOARD_SIZE;r++){
-  for(let c=0;c<BOARD_SIZE;c++){
-    const div = document.createElement('div');
-    div.className = 'cell';
-    const idx = document.createElement('div');
-    idx.className = 'idx';
-    const number = calcCellNumber(r,c);
-    idx.textContent = number;
-    div.appendChild(idx);
-    div.dataset.num = number;
-    gridEl.appendChild(div);
-    cells[number] = div;
-  }
-}
-function calcCellNumber(row,col){
-  const rFromBottom = (BOARD_SIZE - 1) - row;
-  const base = rFromBottom * BOARD_SIZE;
-  return (rFromBottom % 2 === 0) ? base + col + 1 : base + (BOARD_SIZE - col);
-}
-
-/* elements */
-const board = document.getElementById('board');
-const tokenBlue = document.getElementById('token-blue');
-const tokenRed  = document.getElementById('token-red');
-const diceEl = document.getElementById('dice');
-const diceVal = document.getElementById('diceVal');
-const turnName = document.getElementById('turnName');
-const blueStat = document.getElementById('blueStat');
-const redStat  = document.getElementById('redStat');
-const logEl = document.getElementById('log');
-const movesCountEl = document.getElementById('movesCount');
-const winnerBanner = document.getElementById('winnerBanner');
-const burst = document.getElementById('burst');
-
-const btnModeTwo = document.getElementById('modeTwo');
-const btnModeAI  = document.getElementById('modeAI');
-const resetBtn   = document.getElementById('resetBtn');
-const copyBtn    = document.getElementById('copyBtn');
+const grid = document.getElementById("grid");
+const board = document.getElementById("board");
+const blueToken = document.getElementById("blueToken");
+const redToken = document.getElementById("redToken");
+const dice = document.getElementById("dice");
+const log = document.getElementById("log");
+const turnText = document.getElementById("turnText");
+const vsCompBtn = document.getElementById("vsCompBtn");
+const twoPlayerBtn = document.getElementById("twoPlayerBtn");
+const resetBtn = document.getElementById("resetBtn");
 
 let positions = [0,0];
-let currentPlayer = 0; // 0 = Blue, 1 = Red/Computer
-let moves = 0;
-let gameMode = 'ai'; // 'ai' or 'two'
-let busy = false;
-const aiDelay = 2000; // ms to wait before AI starts its dice spin
+let currentPlayer = 0;
+let vsComputer = false;
+const ladders = {3:45,8:12,14:26,21:39,31:73,59:80,90:92,83:97};
+const snakes = {99:41,95:67,89:85,57:2,54:27,11:6};
+const BOARD_SIZE = 10;
 
-// exact mapping requested
-const LADDERS = {3:45,8:12,14:26,21:39,31:73,59:80,90:92,83:97};
-const SNAKES  = {99:41,95:67,89:85,57:2,54:27,11:6};
-
-/* utility: crypto RNG for dice (1..6) */
-function rollCryptoDie(){
-  // Use crypto.getRandomValues for better randomness
-  try{
-    const a = new Uint32Array(1);
-    crypto.getRandomValues(a);
-    return (a[0] % 6) + 1;
-  } catch(e){
-    // fallback
-    return Math.floor(Math.random()*6)+1;
+// Build grid
+const cells = [];
+for(let r=0;r<BOARD_SIZE;r++){
+  for(let c=0;c<BOARD_SIZE;c++){
+    const div=document.createElement("div");
+    grid.appendChild(div);
+    const num=(BOARD_SIZE-1-r)%2===0 ? (BOARD_SIZE-1-r)*10 + c +1 : (BOARD_SIZE-1-r)*10 + (10-c);
+    div.dataset.num=num;
+    cells[num]=div;
   }
 }
 
-/* get center position of a cell within board */
 function getCellCenter(num){
-  const rect = board.getBoundingClientRect();
-  if(!cells[num]) return { x: rect.width * 0.08, y: rect.height * 0.92 };
-  const crect = cells[num].getBoundingClientRect();
-  return { x: crect.left - rect.left + crect.width/2, y: crect.top - rect.top + crect.height/2 };
+  const rect=board.getBoundingClientRect();
+  const crect=cells[num].getBoundingClientRect();
+  return {x:crect.left-rect.left+crect.width/2, y:crect.top-rect.top+crect.height/2};
 }
 
-/* place tokens (initial and on resize) */
-function placeToken(which, num){
-  const el = which === 'blue' ? tokenBlue : tokenRed;
-  const { x, y } = num > 0 ? getCellCenter(num) : { x: board.clientWidth * (which === 'blue' ? 0.08 : 0.14), y: board.clientHeight * 0.92 };
-  el.style.left = x + 'px'; el.style.top = y + 'px';
+function placeToken(el,num){
+  const {x,y}=num>0?getCellCenter(num):{x:20,y:board.clientHeight-20};
+  el.style.left=x+"px";
+  el.style.top=y+"px";
 }
 
-/* animate token along a path (step-by-step) */
-async function animatePath(playerIndex, pathNums){
-  const el = playerIndex === 0 ? tokenBlue : tokenRed;
-  for(const n of pathNums){
-    const { x,y } = n > 0 ? getCellCenter(n) : { x: board.clientWidth * (playerIndex === 0 ? 0.08 : 0.14), y: board.clientHeight * 0.92 };
-    // small hop effect
-    el.style.transform = 'translate(-50%,-60%) scale(1.05)';
-    el.style.left = x + 'px';
-    el.style.top  = y + 'px';
-    await sleep(300);
-    el.style.transform = 'translate(-50%,-50%) scale(1)';
-    await sleep(120);
+function logMsg(msg){
+  log.innerHTML+=`<div>${msg}</div>`;
+  log.scrollTop=log.scrollHeight;
+}
+
+async function animatePath(player,path){
+  const el=player===0?blueToken:redToken;
+  for(let n of path){
+    el.style.animation="hop 0.35s ease";
+    const {x,y}=getCellCenter(n);
+    el.style.left=x+"px";
+    el.style.top=y+"px";
+    await sleep(250);
+    el.style.animation="";
   }
 }
 
-/* animate ladder/snake (jump) */
-async function animateJump(playerIndex, fromNum, toNum){
-  const el = playerIndex === 0 ? tokenBlue : tokenRed;
-  const start = getCellCenter(fromNum);
-  const end = getCellCenter(toNum);
-  showBurst((start.x + end.x)/2, (start.y + end.y)/2);
-  el.style.transition = 'transform 420ms, left 420ms, top 420ms';
-  el.style.transform = 'translate(-50%,-70%) scale(1.08)';
-  el.style.left = end.x + 'px';
-  el.style.top  = end.y + 'px';
-  await sleep(520);
-  el.style.transform = 'translate(-50%,-50%) scale(1)';
-  await sleep(120);
-}
-
-/* small visual burst */
-function showBurst(x,y){
-  burst.style.left = x + 'px';
-  burst.style.top  = y + 'px';
-  burst.style.opacity = '1';
-  burst.style.transform = 'translate(-50%,-50%) scale(1)';
-  setTimeout(()=>{ burst.style.opacity='0'; burst.style.transform='translate(-50%,-50%) scale(0.85)'; }, 480);
-}
-
-/* update stats UI */
-function updateStats(){
-  blueStat.textContent = `Blue: ${positions[0]}`;
-  redStat.textContent  = gameMode === 'ai' ? `Computer: ${positions[1]}` : `Red: ${positions[1]}`;
-  movesCountEl.textContent = `Moves: ${moves}`;
-  placeToken('blue', positions[0]);
-  placeToken('red', positions[1]);
-}
-
-/* log helper */
-function addLog(text){
-  const d = document.createElement('div');
-  d.textContent = `${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} • ${text}`;
-  logEl.prepend(d);
-  while(logEl.children.length > 12) logEl.removeChild(logEl.lastChild);
-}
-
-/* declare winner */
-function declareWinner(playerIndex){
-  addLog(`${playerName(playerIndex)} reached 100 — wins!`);
-  winnerBanner.style.display = 'block';
-  winnerBanner.textContent = `${playerName(playerIndex)} wins! 🎉`;
-  confettiBurst();
-}
-
-/* confetti */
-function confettiBurst(){
-  const w = board.clientWidth, h = board.clientHeight;
-  const canvas = document.createElement('canvas');
-  canvas.width = w; canvas.height = h; canvas.style.position='absolute'; canvas.style.left=0; canvas.style.top=0; canvas.style.zIndex=80;
-  board.appendChild(canvas);
-  const ctx = canvas.getContext('2d');
-  const pieces = [];
-  for(let i=0;i<60;i++){
-    pieces.push({ x: Math.random()*w, y: Math.random()*-h, vx:(Math.random()-0.5)*6, vy:2+Math.random()*6, size:6+Math.random()*8, color:['#f97316','#60a5fa','#f472b6','#34d399','#fef08a'][Math.floor(Math.random()*5)], rot:Math.random()*Math.PI});
-  }
-  let t=0;
-  function frame(){
-    t++;
-    ctx.clearRect(0,0,w,h);
-    for(const p of pieces){
-      p.x+=p.vx; p.y+=p.vy; p.rot+=0.12;
-      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
-      ctx.fillStyle=p.color; ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);
-      ctx.restore();
-    }
-    if(t<140) requestAnimationFrame(frame); else canvas.remove();
-  }
-  frame();
-}
-
-/* ---------- Dice & Flow ---------- */
-
-/* Perform the full dice flow:
-   - spin animate for a short period
-   - reveal the dice number
-   - wait 2s so user sees it
-   - animate token step-by-step
-   - handle ladder/snake jump
-   - check win -> declare or switch turn
-   - if AI mode and it becomes AI's turn, trigger AI after a short delay
-*/
-async function playerRollAction(triggerByAI=false){
-  if(busy) return;
-  if(positions[0] === 100 || positions[1] === 100) { alert('Game over. Reset to play again.'); return; }
-  busy = true;
-
-  // start spin animation
-  diceEl.classList.add('spin');
-  diceEl.setAttribute('aria-pressed','true');
-  // use crypto RNG but only reveal after spin
-  const rolled = rollCryptoDie();
-
-  // keep spinning for the animation duration (900ms)
-  await sleep(900);
-
-  // reveal result
-  diceEl.classList.remove('spin');
-  diceVal.textContent = rolled;
-
-  // Wait 2 seconds before token movement to allow user to see the number
-  await sleep(2000);
-
-  // movement
-  moves++;
-  addLog(`${playerName(currentPlayer)} rolled ${rolled}`);
-  const start = positions[currentPlayer];
-  let target = start + rolled;
-  if(target > 100){
-    addLog(`${playerName(currentPlayer)} rolled ${rolled} — can't pass 100 (stays ${start})`);
-    // small pause then switch turn
-    await sleep(600);
-    switchTurn();
-    busy = false;
-    return;
-  }
-
-  // step-by-step path
-  const path = [];
-  for(let s = start + 1; s <= target; s++) path.push(s);
-  await animatePath(currentPlayer, path);
-  positions[currentPlayer] = target;
-  updateStats();
-
-  // ladder or snake
-  if(LADDERS[target]){
-    const dest = LADDERS[target];
-    addLog(`${playerName(currentPlayer)} landed on a ladder! climbing to ${dest}`);
-    await animateJump(currentPlayer, target, dest);
-    positions[currentPlayer] = dest;
-    updateStats();
-  } else if(SNAKES[target]){
-    const dest = SNAKES[target];
-    addLog(`${playerName(currentPlayer)} landed on a snake! sliding to ${dest}`);
-    await animateJump(currentPlayer, target, dest);
-    positions[currentPlayer] = dest;
-    updateStats();
-  }
-
-  if(positions[currentPlayer] === 100){
-    declareWinner(currentPlayer);
-    busy = false;
-    return;
-  }
-
-  // short pause, then switch turn
-  await sleep(600);
+async function handleRoll(roll){
+  const p=currentPlayer;
+  let target=positions[p]+roll;
+  if(target>100){ logMsg(`🎲 ${playerName(p)} rolled ${roll} but can’t move.`); switchTurn(); return;}
+  logMsg(`🎲 ${playerName(p)} rolled ${roll}`);
+  await sleep(2000); // wait 2s before move
+  const path=[];for(let s=positions[p]+1;s<=target;s++)path.push(s);
+  await animatePath(p,path);
+  positions[p]=target;
+  if(ladders[target]){ logMsg(`🪜 ${playerName(p)} climbs to ${ladders[target]}`); await animateJump(p,target,ladders[target]); positions[p]=ladders[target]; }
+  else if(snakes[target]){ logMsg(`🐍 ${playerName(p)} slides to ${snakes[target]}`); await animateJump(p,target,snakes[target]); positions[p]=snakes[target]; }
+  if(positions[p]===100){ logMsg(`🏆 ${playerName(p)} wins!`); return; }
   switchTurn();
-
-  // if mode = ai and now it's computer's turn, auto play after aiDelay
-  if(gameMode === 'ai' && currentPlayer === 1){
-    await sleep(aiDelay + Math.random()*400);
-    await playerRollAction(true); // AI triggers same sequence
-  }
-
-  busy = false;
 }
 
-/* dice click (human) */
-diceEl.addEventListener('click', ()=> {
-  if(gameMode === 'ai' && currentPlayer === 1) return; // block if AI turn
-  playerRollAction(false);
-});
+async function animateJump(player,from,to){
+  const el=player===0?blueToken:redToken;
+  el.style.transition="top .6s,left .6s";
+  const {x,y}=getCellCenter(to);
+  el.style.left=x+"px";el.style.top=y+"px";
+  await sleep(600);
+  el.style.transition="";
+}
 
-/* keyboard accessibility: Enter/Space on dice */
-diceEl.addEventListener('keydown', (e) => {
-  if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); diceEl.click(); }
-});
+function playerName(i){return i===0?"Blue":"Red";}
 
-/* switch turn helper */
 function switchTurn(){
-  currentPlayer = 1 - currentPlayer;
-  turnName.textContent = currentPlayer === 0 ? 'Blue' : (gameMode === 'ai' ? 'Computer' : 'Red');
-  setDiceColor(true);
+  currentPlayer=1-currentPlayer;
+  turnText.textContent=`Turn: ${playerName(currentPlayer)}`;
+  if(vsComputer && currentPlayer===1){ setTimeout(()=>dice.click(),2000); }
 }
 
-/* set dice color per active player */
-function setDiceColor(instantly){
-  if(currentPlayer === 0){
-    diceEl.style.background = `linear-gradient(180deg, ${getComputedStyle(document.documentElement).getPropertyValue('--blue1') || '--blue1'}, ${getComputedStyle(document.documentElement).getPropertyValue('--blue2') || '--blue2'})`;
-    diceEl.style.background = 'linear-gradient(180deg,#3b82f6,#2563eb)';
-  } else {
-    diceEl.style.background = 'linear-gradient(180deg,#fb7185,#ef4444)';
-  }
-  if(instantly){ diceEl.style.transition = 'none'; setTimeout(()=>diceEl.style.transition = '', 120); }
-}
-
-/* player name helper */
-function playerName(i){ return i === 0 ? 'Blue' : (gameMode === 'ai' ? 'Computer' : 'Red'); }
-
-/* ---------- Computer helper (unused directly, flow goes through playerRollAction) ---------- */
-
-/* ---------- Buttons / UI ---------- */
-btnModeTwo.addEventListener('click', ()=>{ if(gameMode !== 'two'){ gameMode = 'two'; resetGame(); updateModeButtons(); }});
-btnModeAI.addEventListener('click', ()=>{ if(gameMode !== 'ai'){ gameMode = 'ai'; resetGame(); updateModeButtons(); }});
-resetBtn.addEventListener('click', resetGame);
-copyBtn.addEventListener('click', async ()=>{
-  try{ await navigator.clipboard.writeText('4713786'); copyBtn.textContent = 'Copied!'; setTimeout(()=> copyBtn.textContent = 'Copy', 1200); }catch(e){ alert('Copy failed — use: 4713786'); }
+dice.addEventListener("click",async()=>{
+  if(positions[0]>=100||positions[1]>=100)return;
+  dice.classList.add("rolling");
+  const roll=Math.floor(Math.random()*6)+1;
+  await sleep(900);
+  dice.textContent=roll;
+  dice.classList.remove("rolling");
+  await handleRoll(roll);
 });
 
-function updateModeButtons(){
-  btnModeAI.classList.toggle('active', gameMode === 'ai');
-  btnModeTwo.classList.toggle('active', gameMode === 'two');
-  // update Red label
-  redStat.textContent = gameMode === 'ai' ? `Computer: ${positions[1]}` : `Red: ${positions[1]}`;
-  turnName.textContent = currentPlayer === 0 ? 'Blue' : (gameMode === 'ai' ? 'Computer' : 'Red');
-}
+vsCompBtn.onclick=()=>{vsComputer=true;logMsg("💻 Mode: 1 Player vs Computer");};
+twoPlayerBtn.onclick=()=>{vsComputer=false;logMsg("👥 Mode: 2 Players");};
+resetBtn.onclick=()=>location.reload();
 
-/* reset game */
-function resetGame(){
-  positions = [0,0];
-  currentPlayer = 0;
-  moves = 0;
-  busy = false;
-  diceVal.textContent = '—';
-  winnerBanner.style.display = 'none';
-  logEl.innerHTML = 'No moves yet';
-  updateStats();
-  setDiceColor(true);
-}
-
-/* small utilities */
-function sleep(ms){ return new Promise(res => setTimeout(res, ms)); }
-
-/* initial placement on load and on resize */
-window.addEventListener('resize', ()=>{ placeToken('blue', positions[0]); placeToken('red', positions[1]); });
-const boardImg = document.getElementById('boardImg');
-if(boardImg.complete) updateStats(); else boardImg.addEventListener('load', updateStats);
-
-/* initial UI */
-updateModeButtons();
-setDiceColor(true);
-
-/* Prevent Ctrl+U as requested */
-document.addEventListener("keydown", function(e) {
-  if (e.ctrlKey && (e.key === "u" || e.key === "U")) {
-    e.preventDefault();
-    alert("You are not allowed to copy content or view source!");
-  }
-});
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+window.addEventListener("resize",()=>{placeToken(blueToken,positions[0]);placeToken(redToken,positions[1]);});
+placeToken(blueToken,0);placeToken(redToken,0);
 </script>
 </body>
 </html>
