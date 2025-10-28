@@ -1,294 +1,320 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Snakes & Ladders — Neon Edition</title>
-<link rel="icon" type="image/png" href="./favicon.png">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />  
+<title>Snakes & Ladders — Modern (Custom)</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/jpeg" href="./favicon1.jpeg">  
+
 <style>
-:root {
-  --bg1: #040b1a;
-  --bg2: #0a1226;
-  --accent-blue: #3b82f6;
-  --accent-red: #ef4444;
-  --glass: rgba(255,255,255,0.05);
-}
-* { box-sizing: border-box; }
-html, body {
-  height: 100%;
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background: radial-gradient(circle at center, var(--bg1), var(--bg2));
-  color: #e8f0ff;
-  overflow: hidden;
-}
-.wrapper {
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  flex-wrap: wrap;
-}
-.container-board {
-  flex: 3;
-  min-width: 60%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(145deg, #050d23, #070f29);
-  position: relative;
-}
-.container-controls {
-  flex: 1;
-  min-width: 320px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background: linear-gradient(180deg, #0c162f, #050c1a);
-  padding: 15px;
-  box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
-  border-left: 2px solid rgba(255,255,255,0.1);
-}
-.board {
-  position: relative;
-  width: 90%;
-  max-width: 720px;
-  aspect-ratio: 1 / 1;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 3px solid rgba(255,255,255,0.1);
-  box-shadow: 0 0 30px rgba(0,0,0,0.6);
-}
-.board img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-}
-.grid {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  grid-template-columns: repeat(10,1fr);
-  grid-template-rows: repeat(10,1fr);
-  pointer-events: none;
-}
-.token {
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 800;
-  border: 2px solid white;
-  transform: translate(-50%,-50%);
-  transition: top .4s, left .4s;
-}
-.token.blue { background: var(--accent-blue); }
-.token.red { background: var(--accent-red); }
-.controls {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-button {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: white;
-  border-radius: 8px;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.3s;
-}
-button:hover { background: rgba(255,255,255,0.15); }
-.dice {
-  width: 100px;
-  height: 100px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 14px;
-  font-size: 28px;
-  font-weight: 900;
-  border: 3px solid rgba(255,255,255,0.08);
-  cursor: pointer;
-  transition: transform 1s cubic-bezier(.3,1,.3,1);
-}
-.dice.rolling { transform: rotate(720deg) scale(1.05); }
-.log {
-  background: rgba(255,255,255,0.05);
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 13px;
-  height: 150px;
-  overflow-y: auto;
-}
-footer {
-  font-size: 12px;
-  text-align: center;
-  color: #ccc;
-  opacity: 0.8;
-}
-@keyframes hop {
-  0%,100% { transform: translate(-50%, -50%) scale(1); }
-  50% { transform: translate(-50%, -65%) scale(1.05); }
-}
-@media (max-width: 900px) {
-  .wrapper { flex-direction: column; }
-  .container-controls { border-left: none; border-top: 2px solid rgba(255,255,255,0.1); }
-  .board { width: 95%; max-width: 600px; }
-}
+  :root {
+    --bg1: #071026;
+    --bg2: #081329;
+    --glass: rgba(255,255,255,0.04);
+    --muted: rgba(255,255,255,0.7);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    background: linear-gradient(180deg, var(--bg1), var(--bg2));
+    color: #e8f0ff;
+    overflow: hidden;
+  }
+  .game-wrapper {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform-origin: center center;
+    transition: transform .5s ease, width .5s, height .5s;
+  }
+  .rotated {
+    transform: rotate(90deg) translateY(-100%);
+    width: 100vh;
+    height: 100vw;
+  }
+  .wrap { max-width: 1180px; margin: 28px auto; padding: 18px; display: grid; grid-template-columns: 1fr 380px; gap: 18px; align-items: start; }
+  .card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius: 14px; padding: 12px; border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 8px 30px rgba(2,6,23,0.6); }
+  .title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .title h1 { font-size: 20px; margin: 0; }
+  .subtitle { font-size: 13px; color: var(--muted); }
+  .board-wrap { position: relative; padding: 10px; }
+  .board { width: 720px; height: 720px; max-width: 100%; border-radius: 12px; overflow: hidden; position: relative; border: 6px solid rgba(255,255,255,0.04); background: #000; box-shadow: 0 18px 40px rgba(2,6,23,0.6); }
+  .board img { display: block; width: 100%; height: 100%; object-fit: cover; filter: contrast(1.02) saturate(1.05); }
+  .grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(10,1fr); grid-template-rows: repeat(10,1fr); pointer-events: none; }
+  .cell .idx { display: none; }
+  .token { position: absolute; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; box-shadow: 0 10px 28px rgba(2,6,23,0.6); border: 3px solid rgba(255,255,255,0.9); transform: translate(-50%,-50%); transition: left 420ms cubic-bezier(.2,.9,.3,1), top 420ms cubic-bezier(.2,.9,.3,1), transform 420ms; }
+  .token.blue { background: linear-gradient(180deg,#3b82f6,#2563eb); }
+  .token.red { background: linear-gradient(180deg,#fb7185,#ef4444); }
+  .token .label { font-size: 13px; letter-spacing: 0.5px; }
+  .controls { display: flex; flex-direction: column; gap: 12px; }
+  .dice { width: 120px; height: 120px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 900; color: white; cursor: pointer; user-select: none; border: 4px solid rgba(255,255,255,0.05); box-shadow: 0 14px 40px rgba(2,6,23,0.6); transition: transform .9s cubic-bezier(.22,.9,.3,1); }
+  .dice.rolling { transform: rotate(720deg) scale(1.02); }
+  .dice .small { font-size: 13px; opacity: 0.95; }
+  .meta { display: flex; gap: 8px; align-items: center; }
+  .pill { padding: 8px 10px; border-radius: 999px; background: rgba(255,255,255,0.03); font-weight: 700; }
+  .log { background: rgba(255,255,255,0.02); padding: 10px; border-radius: 10px; max-height: 180px; overflow: auto; font-size: 13px; }
+  .donate { background: linear-gradient(90deg,#fff7ed,#fff1e6); color: #1f2937; padding: 12px; border-radius: 10px; }
+  .donate .till { font-weight: 900; font-size: 20px; }
+  .copy { background: #f59e0b; padding: 8px 12px; border-radius: 10px; border: none; cursor: pointer; font-weight: 800; }
+  .small-muted { font-size: 12px; color: rgba(255,255,255,0.75); }
+  .btn { padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.03); cursor: pointer; }
+  .winner-banner { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); padding: 10px 18px; border-radius: 999px; background: linear-gradient(90deg,#fef3c7,#fde68a); color: #111; font-weight: 900; display: none; z-index: 60; }
+  .highlight-burst { position: absolute; pointer-events: none; border-radius: 999px; box-shadow: 0 6px 28px rgba(255,255,255,0.12); opacity: 0; transform: scale(0.85); transition: opacity 260ms, transform 260ms; }
+  @media (max-width:1100px){ .wrap { grid-template-columns: 1fr; gap: 14px; } .board { height: min(90vw, 720px); } }
 </style>
 </head>
 <body>
 
-<div class="wrapper">
-  <div class="container-board">
-    <div class="board" id="board">
-      <img src="./snakes.jpg" alt="Snakes and Ladders" id="boardImg">
-      <div class="grid" id="grid"></div>
-      <div class="token blue" id="blueToken">B</div>
-      <div class="token red" id="redToken">R</div>
-    </div>
-  </div>
-
-  <div class="container-controls">
-    <div class="controls">
-      <h2>🎮 Game Controls</h2>
-      <div style="display:flex;gap:8px;justify-content:center;">
-        <button id="vsCompBtn">1 Player vs Computer</button>
-        <button id="twoPlayerBtn">2 Players</button>
+<div class="game-wrapper">
+  <div class="wrap">
+    <div class="card board-wrap">
+      <div class="title">
+        <div>
+          <h1>Snakes & Ladders</h1>
+          <div class="subtitle">Blue vs Red — First to reach square 100 wins</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="resetBtn" class="btn">Reset</button>
+          <div id="movesCount" class="small-muted">Moves: 0</div>
+        </div>
       </div>
-      <div id="turnText" style="text-align:center;font-weight:600;">Turn: Blue</div>
-      <div id="dice" class="dice">🎲</div>
-      <button id="resetBtn">Reset Game</button>
-    </div>
 
-    <div>
-      <div class="log" id="log">No moves yet...</div>
-      <div style="margin-top:10px;background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;">
-        <strong>Support Us (M-Pesa)</strong><br>
-        Till Number: <strong>4713786</strong>
+      <div class="board" id="board">
+        <img src="./snakes.jpg" alt="Snakes & Ladders board" id="boardImg" crossorigin="anonymous" />
+        <div id="grid" class="grid"></div>
+        <div id="token-blue" class="token blue"><div class="label">B</div></div>
+        <div id="token-red" class="token red"><div class="label">R</div></div>
+        <div id="winnerBanner" class="winner-banner">Winner!</div>
+        <div id="burst" class="highlight-burst" style="width:120px;height:120px;left:50%;top:50%;transform:translate(-50%,-50%)"></div>
       </div>
     </div>
 
-    <footer>Snakes & Ladders Neon — © 2025</footer>
+    <aside class="card controls">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-weight:900;font-size:18px">Controls</div>
+          <div class="small-muted">Click dice to roll. Dice color = current player.</div>
+        </div>
+        <div id="turnBadge" class="pill">Turn: <span id="turnName">Blue</span></div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:center; margin-top:6px">
+        <div id="dice" class="dice" title="Click to roll">
+          <div style="text-align:center">
+            <div class="small">Roll</div>
+            <div id="diceVal" style="font-size:26px">—</div>
+          </div>
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+          <div class="meta">
+            <div class="pill" id="blueStat">Blue: 0</div>
+            <div class="pill" id="redStat">Red: 0</div>
+          </div>
+          <div class="log" id="log">No moves yet</div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px">
+        <div class="donate">
+          <div style="font-weight:800">Support Us (M-Pesa)</div>
+          <div style="margin-top:8px; display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <div style="font-size:13px">Till number</div>
+              <div class="till">4713786</div>
+            </div>
+            <div><button id="copyBtn" class="copy">Copy</button></div>
+          </div>
+          <div style="margin-top:8px;font-size:12px;color:#111">Use Lipa na M-Pesa → Pay Bill/Till → enter till number and amount.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px">
+        <div style="font-weight:800">Rules & Notes</div>
+        <ul style="font-size:13px;margin:8px 0 0 18px">
+          <li>Roll 1–6, move forward square by square.</li>
+          <li>If you land at bottom of ladder, climb to its top.</li>
+          <li>If you land on a snake head, slide to its tail.</li>
+        </ul>
+      </div>
+    </aside>
   </div>
 </div>
 
 <script>
-const grid = document.getElementById("grid");
-const board = document.getElementById("board");
-const blueToken = document.getElementById("blueToken");
-const redToken = document.getElementById("redToken");
-const dice = document.getElementById("dice");
-const log = document.getElementById("log");
-const turnText = document.getElementById("turnText");
-const vsCompBtn = document.getElementById("vsCompBtn");
-const twoPlayerBtn = document.getElementById("twoPlayerBtn");
-const resetBtn = document.getElementById("resetBtn");
-
-let positions = [0,0];
-let currentPlayer = 0;
-let vsComputer = false;
-const ladders = {3:45,8:12,14:26,21:39,31:73,59:80,90:92,83:97};
-const snakes = {99:41,95:67,89:85,57:2,54:27,11:6};
-const BOARD_SIZE = 10;
-
-// Build grid
-const cells = [];
-for(let r=0;r<BOARD_SIZE;r++){
-  for(let c=0;c<BOARD_SIZE;c++){
-    const div=document.createElement("div");
-    grid.appendChild(div);
-    const num=(BOARD_SIZE-1-r)%2===0 ? (BOARD_SIZE-1-r)*10 + c +1 : (BOARD_SIZE-1-r)*10 + (10-c);
-    div.dataset.num=num;
-    cells[num]=div;
+  // --- Game Logic (same as before) ---
+  const BOARD_SIZE=10;
+  const gridEl=document.getElementById('grid');
+  const cells=[];
+  for(let r=0;r<BOARD_SIZE;r++){
+    for(let c=0;c<BOARD_SIZE;c++){
+      const div=document.createElement('div');
+      div.className='cell';
+      const idx=document.createElement('div');
+      idx.className='idx';
+      const number=calcCellNumber(r,c);
+      idx.textContent=number;
+      div.appendChild(idx);
+      div.dataset.num=number;
+      gridEl.appendChild(div);
+      cells[number]=div;
+    }
   }
-}
-
-function getCellCenter(num){
-  const rect=board.getBoundingClientRect();
-  const crect=cells[num].getBoundingClientRect();
-  return {x:crect.left-rect.left+crect.width/2, y:crect.top-rect.top+crect.height/2};
-}
-
-function placeToken(el,num){
-  const {x,y}=num>0?getCellCenter(num):{x:20,y:board.clientHeight-20};
-  el.style.left=x+"px";
-  el.style.top=y+"px";
-}
-
-function logMsg(msg){
-  log.innerHTML+=`<div>${msg}</div>`;
-  log.scrollTop=log.scrollHeight;
-}
-
-async function animatePath(player,path){
-  const el=player===0?blueToken:redToken;
-  for(let n of path){
-    el.style.animation="hop 0.35s ease";
-    const {x,y}=getCellCenter(n);
-    el.style.left=x+"px";
-    el.style.top=y+"px";
-    await sleep(250);
-    el.style.animation="";
+  function calcCellNumber(row,col){
+    const rFromBottom=(BOARD_SIZE-1)-row;
+    const base=rFromBottom*BOARD_SIZE;
+    return rFromBottom%2===0?base+col+1:base+(BOARD_SIZE-col);
   }
-}
 
-async function handleRoll(roll){
-  const p=currentPlayer;
-  let target=positions[p]+roll;
-  if(target>100){ logMsg(`🎲 ${playerName(p)} rolled ${roll} but can’t move.`); switchTurn(); return;}
-  logMsg(`🎲 ${playerName(p)} rolled ${roll}`);
-  await sleep(2000); // wait 2s before move
-  const path=[];for(let s=positions[p]+1;s<=target;s++)path.push(s);
-  await animatePath(p,path);
-  positions[p]=target;
-  if(ladders[target]){ logMsg(`🪜 ${playerName(p)} climbs to ${ladders[target]}`); await animateJump(p,target,ladders[target]); positions[p]=ladders[target]; }
-  else if(snakes[target]){ logMsg(`🐍 ${playerName(p)} slides to ${snakes[target]}`); await animateJump(p,target,snakes[target]); positions[p]=snakes[target]; }
-  if(positions[p]===100){ logMsg(`🏆 ${playerName(p)} wins!`); return; }
-  switchTurn();
-}
+  const board=document.getElementById('board');
+  function getCellCenter(num){
+    const rect=board.getBoundingClientRect();
+    if(!cells[num])return{x:rect.width*0.05,y:rect.height*0.95};
+    const crect=cells[num].getBoundingClientRect();
+    const x=crect.left-rect.left+crect.width/2;
+    const y=crect.top-rect.top+crect.height/2;
+    return{x,y};
+  }
 
-async function animateJump(player,from,to){
-  const el=player===0?blueToken:redToken;
-  el.style.transition="top .6s,left .6s";
-  const {x,y}=getCellCenter(to);
-  el.style.left=x+"px";el.style.top=y+"px";
-  await sleep(600);
-  el.style.transition="";
-}
+  const LADDERS={3:45,8:12,14:26,21:39,31:73,59:80,90:92,83:97};
+  const SNAKES={99:41,95:67,89:85,57:2,54:27,11:6};
+  let positions=[0,0],currentPlayer=0,moves=0;
+  const tokenBlue=document.getElementById('token-blue'),
+        tokenRed=document.getElementById('token-red'),
+        dice=document.getElementById('dice'),
+        diceVal=document.getElementById('diceVal'),
+        turnName=document.getElementById('turnName'),
+        blueStat=document.getElementById('blueStat'),
+        redStat=document.getElementById('redStat'),
+        logEl=document.getElementById('log'),
+        movesCountEl=document.getElementById('movesCount'),
+        winnerBanner=document.getElementById('winnerBanner'),
+        burst=document.getElementById('burst'),
+        resetBtn=document.getElementById('resetBtn');
 
-function playerName(i){return i===0?"Blue":"Red";}
+  setDiceColor();updateStats();placeToken('blue',0);placeToken('red',0);
 
-function switchTurn(){
-  currentPlayer=1-currentPlayer;
-  turnText.textContent=`Turn: ${playerName(currentPlayer)}`;
-  if(vsComputer && currentPlayer===1){ setTimeout(()=>dice.click(),2000); }
-}
+  function placeToken(which,num){
+    const el=which==='blue'?tokenBlue:tokenRed;
+    const {x,y}=num>0?getCellCenter(num):{x:board.clientWidth*(which==='blue'?0.08:0.14),y:board.clientHeight*0.95};
+    el.style.left=x+'px';
+    el.style.top=y+'px';
+  }
 
-dice.addEventListener("click",async()=>{
-  if(positions[0]>=100||positions[1]>=100)return;
-  dice.classList.add("rolling");
-  const roll=Math.floor(Math.random()*6)+1;
-  await sleep(900);
-  dice.textContent=roll;
-  dice.classList.remove("rolling");
-  await handleRoll(roll);
-});
+  window.addEventListener('resize',()=>{placeToken('blue',positions[0]);placeToken('red',positions[1]);});
 
-vsCompBtn.onclick=()=>{vsComputer=true;logMsg("💻 Mode: 1 Player vs Computer");};
-twoPlayerBtn.onclick=()=>{vsComputer=false;logMsg("👥 Mode: 2 Players");};
-resetBtn.onclick=()=>location.reload();
+  async function animatePath(playerIndex,pathNums){
+    const el=playerIndex===0?tokenBlue:tokenRed;
+    for(let n of pathNums){
+      const {x,y}=n>0?getCellCenter(n):{x:board.clientWidth*(playerIndex===0?0.08:0.14),y:board.clientHeight*0.95};
+      el.style.transform='translate(-50%,-60%) scale(1.03)';
+      el.style.left=x+'px';el.style.top=y+'px';
+      await sleep(300);
+      el.style.transform='translate(-50%,-50%) scale(1)';
+      await sleep(120);
+    }
+  }
 
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-window.addEventListener("resize",()=>{placeToken(blueToken,positions[0]);placeToken(redToken,positions[1]);});
-placeToken(blueToken,0);placeToken(redToken,0);
+  async function animateJump(playerIndex,fromNum,toNum,type){
+    const el=playerIndex===0?tokenBlue:tokenRed;
+    const start=getCellCenter(fromNum);
+    const end=getCellCenter(toNum);
+    showBurst((start.x+end.x)/2,(start.y+end.y)/2);
+    el.style.transform='translate(-50%,-70%) scale(1.08)';
+    el.style.left=end.x+'px';
+    el.style.top=end.y+'px';
+    await sleep(520);
+    el.style.transform='translate(-50%,-50%) scale(1)';
+    await sleep(120);
+  }
+
+  function showBurst(x,y){
+    burst.style.left=x+'px';
+    burst.style.top=y+'px';
+    burst.style.opacity='1';
+    burst.style.transform='translate(-50%,-50%) scale(1)';
+    setTimeout(()=>{burst.style.opacity='0';burst.style.transform='translate(-50%,-50%) scale(0.85)';},480);
+  }
+
+  let rolling=false;
+  dice.addEventListener('click',async()=>{
+    if(rolling)return;
+    if(positions[0]===100||positions[1]===100){alert('Game over. Reset to play again.');return;}
+    rolling=true;
+    dice.classList.add('rolling');
+    setDiceColor(true);
+    const result=Math.floor(Math.random()*6)+1;
+    diceVal.textContent='...';
+    await sleep(720);
+    diceVal.textContent=result;
+    dice.classList.remove('rolling');
+    rolling=false;
+    moves++;
+    movesCountEl.textContent='Moves: '+moves;
+    await handleMove(result);
+  });
+
+  async function handleMove(roll){
+    const p=currentPlayer;
+    const start=positions[p];
+    let target=start+roll;
+    if(target>100){addLog(`${playerName(p)} rolled ${roll} — can't pass 100`);switchTurn();return;}
+    addLog(`${playerName(p)} rolled ${roll} — moving to ${target}`);
+    const path=[];for(let s=start+1;s<=target;s++)path.push(s);
+    await animatePath(p,path);
+    positions[p]=target;
+    updateStats();
+    if(LADDERS[target]){
+      const dest=LADDERS[target];
+      addLog(`${playerName(p)} climbed a ladder to ${dest}`);
+      await animateJump(p,target,dest,'ladder');
+      positions[p]=dest;updateStats();
+    }else if(SNAKES[target]){
+      const dest=SNAKES[target];
+      addLog(`${playerName(p)} slid down a snake to ${dest}`);
+      await animateJump(p,target,dest,'snake');
+      positions[p]=dest;updateStats();
+    }
+    if(positions[p]===100){declareWinner(p);return;}
+    switchTurn();
+  }
+
+  function switchTurn(){currentPlayer=1-currentPlayer;turnName.textContent=currentPlayer===0?'Blue':'Red';setDiceColor();}
+  function setDiceColor(instantly){dice.style.background=currentPlayer===0?'linear-gradient(180deg,#3b82f6,#2563eb)':'linear-gradient(180deg,#fb7185,#ef4444)';if(instantly)dice.style.transition='none';setTimeout(()=>dice.style.transition='',50);}
+  function updateStats(){blueStat.textContent='Blue: '+positions[0];redStat.textContent='Red: '+positions[1];}
+  function addLog(msg){logEl.innerHTML+=`<div>${msg}</div>`;logEl.scrollTop=logEl.scrollHeight;}
+  function playerName(i){return i===0?'Blue':'Red';}
+  function declareWinner(p){winnerBanner.style.display='block';winnerBanner.textContent=playerName(p)+' Wins!';addLog(`<b>${playerName(p)} Wins! 🎉</b>`);}
+  function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+  resetBtn.addEventListener('click',()=>location.reload());
+  document.getElementById('copyBtn').addEventListener('click',()=>{navigator.clipboard.writeText('4713786');alert('Till number copied');});
+  
+  // --- Orientation Feature ---
+  async function requestLandscapeMode(){
+    if(screen.orientation&&screen.orientation.lock){
+      try{
+        const allow=confirm("Rotate screen for better game experience?");
+        if(!allow)return;
+        if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();
+        await screen.orientation.lock("landscape");
+        console.log("Orientation locked to landscape");
+      }catch(err){console.warn("Orientation lock failed:",err);}
+    }
+  }
+  window.addEventListener("load",()=>{if(/Mobi|Android/i.test(navigator.userAgent))setTimeout(requestLandscapeMode,1500);});
 </script>
+<script>
+  document.addEventListener("keydown", function(e) {
+    if (e.ctrlKey && (e.key === "u" || e.key === "U")) {
+      e.preventDefault();
+      alert("You are not allowed to copy content or view source!");
+    }
+  });
+</script>  
 </body>
 </html>
