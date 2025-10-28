@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>1Snakes & Ladders Online</title>
-<link rel="icon" type="image/jpeg" href="./favicon1.jpeg" />
+<title>Snakes & Ladders Online</title>
+<link rel="icon" type="image/jpeg" href="./favicon.jpeg" />
 <style>
 :root {
   --blue: #3b82f6;
@@ -28,7 +28,7 @@ html, body {
   color: #fff;
 }
 
-/* Layout containers */
+/* Layout */
 .main {
   display: flex;
   width: 100vw;
@@ -235,7 +235,6 @@ html, body {
 </div>
 
 <script>
-/* === Variables === */
 const BOARD_SIZE=10;
 const LADDERS={3:45,8:12,14:26,21:39,31:73,59:80,90:92,83:97};
 const SNAKES={99:41,95:67,89:85,57:2,54:27,11:6};
@@ -245,7 +244,6 @@ let gameMode='ai';
 let rolling=false;
 const aiDelay=2000;
 
-/* Elements */
 const dice=document.getElementById('dice');
 const diceVal=document.getElementById('diceVal');
 const tokenBlue=document.getElementById('token-blue');
@@ -260,7 +258,6 @@ const resetBtn=document.getElementById('resetBtn');
 const board=document.getElementById('board');
 const grid=document.getElementById('grid');
 
-/* Grid generation */
 const cells=[];
 for(let r=0;r<BOARD_SIZE;r++){
   for(let c=0;c<BOARD_SIZE;c++){
@@ -297,7 +294,6 @@ function addLog(msg){
   logEl.prepend(p);
 }
 
-/* === Game Logic === */
 dice.addEventListener('click',async()=>{
   if(rolling)return;
   if(gameMode==='ai'&&currentPlayer===1)return;
@@ -305,9 +301,12 @@ dice.addEventListener('click',async()=>{
   dice.classList.add('rolling');
   const roll=Math.floor(Math.random()*6)+1;
   diceVal.textContent='...';
-  await new Promise(r=>setTimeout(r,600));
+  await new Promise(r=>setTimeout(r,1000));
   dice.classList.remove('rolling');
   diceVal.textContent=roll;
+
+  // Wait 2 seconds before moving
+  await new Promise(r=>setTimeout(r,2000));
   await movePlayer(currentPlayer,roll);
 });
 
@@ -327,16 +326,19 @@ async function movePlayer(p,roll){
   }
   placeToken(p===0?tokenBlue:tokenRed,positions[p]);
   updateStats();
-  if(positions[p]===100){addLog(`${p==0?'Blue':'Red/Comp'} wins!`);return;}
+  if(positions[p]===100){addLog(`${p==0?'Blue':'Red/Comp'} wins!`);rolling=false;return;}
+  
   currentPlayer=1-currentPlayer;
   turnName.textContent=currentPlayer==0?'Blue':(gameMode==='ai'?'Computer':'Red');
   updateDiceColor();
+
   if(gameMode==='ai'&&currentPlayer===1){
     await new Promise(r=>setTimeout(r,aiDelay));
     const roll=Math.floor(Math.random()*6)+1;
     diceVal.textContent='...';
-    await new Promise(r=>setTimeout(r,500));
+    await new Promise(r=>setTimeout(r,1000));
     diceVal.textContent=roll;
+    await new Promise(r=>setTimeout(r,2000));
     await movePlayer(1,roll);
   }
   rolling=false;
@@ -362,20 +364,17 @@ function resetGame(){
   updateDiceColor();
 }
 
-/* Resize reposition tokens */
 window.addEventListener('resize',()=>{
   placeToken(tokenBlue,positions[0]);
   placeToken(tokenRed,positions[1]);
 });
 
-/* Init */
 updateStats();
 placeToken(tokenBlue,0);
 placeToken(tokenRed,0);
 updateDiceColor();
 highlightModes();
 
-/* Prevent Ctrl+U */
 document.addEventListener("keydown",function(e){
   if(e.ctrlKey&&(e.key==="u"||e.key==="U")){
     e.preventDefault();
