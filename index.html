@@ -1,389 +1,521 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Snakes & Ladders Online</title>
-<link rel="icon" type="image/jpeg" href="./favicon.jpeg" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+<title>Snakes & Ladders — Modern Responsive</title>
+<link rel="icon" type="image/jpeg" href="./favicon1.jpeg">
 <style>
-:root {
-  --blue: #3b82f6;
-  --red: #ef4444;
-  --bg-dark: #0b1120;
-  --card-bg: rgba(255,255,255,0.05);
-}
+  :root{
+    --bg1:#071026; --bg2:#081329;
+    --card: rgba(255,255,255,0.03);
+    --muted: rgba(255,255,255,0.75);
+    --blue1:#3b82f6; --blue2:#2563eb;
+    --red1:#fb7185; --red2:#ef4444;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#e8f0ff;overflow:hidden}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
-  width: 100%; height: 100%;
-  overflow: hidden;
-  font-family: 'Inter', sans-serif;
-  background: linear-gradient(180deg, #030712, #111827);
-  color: #fff;
-}
+  /* Viewport centers everything and prevents scrolling */
+  .viewport{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;padding:1vmin}
 
-.main {
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-}
+  /* Main layout: left = big (board+mode buttons), right = slim (dice, log, donate, rules) */
+  .layout{width:min(1180px,98vw);height:min(820px,96vh);display:grid;grid-template-columns:1fr 360px;gap:12px;align-items:start}
+  @media (max-width:980px){ .layout{grid-template-columns:1fr;grid-auto-rows:1fr;gap:8px;height:98vh} }
 
-.containerA, .containerB {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0.6rem;
-  gap: 0.6rem;
-}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:10px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(2,6,23,0.6);overflow:hidden}
 
-.containerA {
-  flex: 2.3;
-  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
-}
+  /* Title row */
+  .title{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .title h1{font-size:18px;margin:0}
+  .subtitle{font-size:12px;color:var(--muted)}
 
-.containerB {
-  flex: 1;
-  background: linear-gradient(180deg, #1e293b, #0f172a);
-  border-left: 1px solid rgba(255,255,255,0.1);
-}
+  /* Left panel (big) */
+  .left{display:flex;flex-direction:column;gap:8px;height:100%}
+  .modes{display:flex;gap:8px;align-items:center}
+  .mode-btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;cursor:pointer;font-weight:800}
+  .mode-btn.active{background:linear-gradient(90deg,var(--blue1),var(--blue2));color:#fff;border:none}
+  .reset-btn{padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);cursor:pointer}
 
-/* Stack on mobile */
-@media (max-width: 900px) {
-  .main { flex-direction: column; }
-  .containerA, .containerB { width: 100%; flex: none; height: 50%; }
-}
+  /* Board container (keeps a perfect square and scales) */
+  .board-wrap{flex:1;display:flex;align-items:center;justify-content:center}
+  .board{
+    width:100%;
+    max-width:calc(100% - 6px);
+    max-height:calc(100% - 6px);
+    aspect-ratio:1/1;
+    border-radius:10px;
+    overflow:hidden;
+    border:6px solid rgba(255,255,255,0.04);
+    background:#000;
+    display:block;
+    position:relative;
+  }
+  /* Ensures full board always visible (never cropped) */
+  .board img{width:100%;height:100%;object-fit:contain;display:block;background:#061025}
 
-/* Buttons */
-.btn-group {
-  display: flex; justify-content: center; gap: 0.4rem; flex-wrap: wrap;
-}
-.btn {
-  background: var(--card-bg);
-  border: 1px solid rgba(255,255,255,0.1);
-  padding: 0.4rem 0.8rem;
-  border-radius: 6px;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.3s;
-}
-.btn:hover { background: rgba(255,255,255,0.1); }
-.btn.primary { background: linear-gradient(90deg, var(--blue), var(--red)); }
+  /* Invisible grid overlay for mapping cells */
+  .grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(10,1fr);pointer-events:none}
+  .cell .idx{display:none}
 
-/* Board */
-.board-wrapper {
-  flex: 1;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
-.board {
-  position: relative;
-  width: 90%;
-  aspect-ratio: 1 / 1;
-  border-radius: 10px;
-  overflow: hidden;
-  border: 3px solid rgba(255,255,255,0.1);
-  background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.board img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.grid {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: repeat(10, 1fr);
-  pointer-events: none;
-}
+  /* Tokens */
+  .token{position:absolute;width:6.2%;aspect-ratio:1/1;border-radius:999px;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;border:3px solid rgba(255,255,255,0.9);box-shadow:0 10px 28px rgba(2,6,23,0.6);transform:translate(-50%,-50%);transition:left 320ms linear,top 320ms linear,transform 240ms;z-index:50}
+  .token.blue{background:linear-gradient(180deg,var(--blue1),var(--blue2))}
+  .token.red{background:linear-gradient(180deg,var(--red1),var(--red2))}
 
-/* Tokens */
-.token {
-  position: absolute;
-  width: 6%;
-  aspect-ratio: 1 / 1;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-weight: bold;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-  transform: translate(-50%, -50%);
-  transition: left 0.3s linear, top 0.3s linear;
-}
-.token.blue { background: var(--blue); }
-.token.red { background: var(--red); }
+  /* Right panel (slim) */
+  .right{display:flex;flex-direction:column;gap:10px;height:100%}
+  .dice{
+    width:110px;height:110px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;color:white;font-size:24px;border:4px solid rgba(255,255,255,0.05);box-shadow:0 14px 40px rgba(2,6,23,0.6);cursor:pointer;user-select:none;transition:transform 1s linear;
+    margin:6px auto;
+  }
+  .dice.spin{animation:spinCW 900ms linear}
+  @keyframes spinCW{from{transform:rotate(0deg)}to{transform:rotate(720deg)}}
 
-/* Dice */
-.dice {
-  width: 80px;
-  height: 80px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  background: var(--blue);
-  font-size: 26px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-  transition: transform 0.6s ease, background 0.3s;
-}
-.dice.rolling {
-  animation: rollClockwise 1s linear;
-}
-@keyframes rollClockwise {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-.dice span { font-size: 20px; margin-top: 4px; }
+  .small{font-size:12px;opacity:0.95}
+  .pills{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .pill{padding:8px 10px;border-radius:999px;background:rgba(255,255,255,0.03);font-weight:700}
 
-/* Sidebar sections */
-.section {
-  width: 100%;
-  padding: 0.5rem;
-  background: var(--card-bg);
-  border-radius: 8px;
-  font-size: 0.9rem;
-}
-.section h3 { font-size: 0.95rem; margin-bottom: 0.3rem; }
-.log {
-  max-height: 120px;
-  overflow-y: auto;
-  font-size: 0.8rem;
-  line-height: 1.3;
-  color: #d1d5db;
-}
-.log::-webkit-scrollbar { width: 0; }
+  .log{background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;max-height:240px;overflow:auto;font-size:13px;color:#dbeafe}
+
+  .donate{background:linear-gradient(90deg,#fff7ed,#fff1e6);color:#111;padding:10px;border-radius:8px}
+  .copy{background:#f59e0b;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+
+  .rules{font-size:13px;color:var(--muted)}
+
+  /* Responsive tweaks */
+  @media (max-width:980px){
+    .pills{justify-content:space-between}
+    .dice{width:86px;height:86px;font-size:20px}
+    .token{width:7.6%}
+  }
 </style>
 </head>
 <body>
+  <div class="viewport">
+    <div class="layout">
+      <!-- LEFT (main) -->
+      <div class="card left">
+        <div class="title">
+          <div>
+            <h1>Snakes & Ladders</h1>
+            <div class="subtitle">Blue vs Red — First to 100 wins</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button id="resetBtn" class="reset-btn">Reset</button>
+            <div id="movesCount" style="font-size:12px;color:var(--muted)">Moves: 0</div>
+          </div>
+        </div>
 
-<div class="main">
-  <!-- Container A -->
-  <div class="containerA">
-    <div class="btn-group">
-      <button id="btnTwo" class="btn">Two Players</button>
-      <button id="btnAI" class="btn primary">Play vs Computer</button>
-      <button id="resetBtn" class="btn">Reset</button>
-    </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="modes">
+            <button id="modeTwo" class="mode-btn">Two Players</button>
+            <button id="modeAI" class="mode-btn active">Play vs Computer</button>
+          </div>
+        </div>
 
-    <div class="board-wrapper">
-      <div class="board" id="board">
-        <img src="./snakes.jpg" alt="Snakes & Ladders" />
-        <div class="grid" id="grid"></div>
-        <div class="token blue" id="token-blue">B</div>
-        <div class="token red" id="token-red">R</div>
+        <div class="board-wrap">
+          <div class="board" id="board">
+            <img id="boardImg" src="./snakes.jpg" alt="Board" crossorigin="anonymous" />
+            <div id="grid" class="grid"></div>
+
+            <div id="token-blue" class="token blue" style="left:8%;top:88%"><div style="font-size:12px">B</div></div>
+            <div id="token-red"  class="token red"  style="left:14%;top:88%"><div style="font-size:12px">R</div></div>
+
+            <div id="winnerBanner" style="position:absolute;left:50%;top:10px;transform:translateX(-50%);display:none;background:linear-gradient(90deg,#fef3c7,#fde68a);color:#111;padding:8px 14px;border-radius:999px;font-weight:900;z-index:60">Winner!</div>
+            <div id="burst" style="position:absolute;width:120px;height:120px;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;opacity:0;border-radius:999px;box-shadow:0 6px 28px rgba(255,255,255,0.12);transition:opacity .26s, transform .26s;"></div>
+          </div>
+        </div>
       </div>
+
+      <!-- RIGHT (slim) -->
+      <aside class="card right" aria-label="Controls & Info">
+        <div style="text-align:center">
+          <div id="dice" class="dice" title="Click to roll" role="button" aria-pressed="false" tabindex="0">
+            <div style="font-size:12px" class="small">Roll</div>
+            <div id="diceVal" style="font-size:28px">—</div>
+          </div>
+        </div>
+
+        <div class="pills" style="justify-content:center">
+          <div class="pill" id="turnBadge">Turn: <strong id="turnName">Blue</strong></div>
+        </div>
+
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:6px">
+          <div class="pill" id="blueStat">Blue: 0</div>
+          <div class="pill" id="redStat">Red: 0</div>
+        </div>
+
+        <div class="log" id="log" aria-live="polite" style="margin-top:8px">No moves yet</div>
+
+        <div class="donate" style="margin-top:8px">
+          <div style="font-weight:800">Support Us (M-Pesa)</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+            <div><div style="font-size:12px">Till number</div><div style="font-weight:900">4713786</div></div>
+            <div><button id="copyBtn" class="copy">Copy</button></div>
+          </div>
+          <div style="font-size:12px;color:#111;margin-top:8px">Use Lipa na M-Pesa → Pay Bill/Till → enter till number and amount.</div>
+        </div>
+
+        <div style="margin-top:10px" class="rules">
+          <div style="font-weight:800">Rules & Notes</div>
+          <ul style="margin:6px 0 0 18px">
+            <li>Roll 1–6, move forward square-by-square.</li>
+            <li>If you land at bottom of ladder, climb to its top instantly.</li>
+            <li>If you land on a snake head, slide down to its tail instantly.</li>
+          </ul>
+        </div>
+      </aside>
     </div>
   </div>
-
-  <!-- Container B -->
-  <div class="containerB">
-    <div class="dice" id="dice">
-      <div>🎲</div>
-      <span id="diceVal">—</span>
-    </div>
-
-    <div class="section">
-      <h3>Game Info</h3>
-      <p>Turn: <span id="turnName">Blue</span></p>
-      <p>Blue: <span id="bluePos">0</span></p>
-      <p>Red/Comp: <span id="redPos">0</span></p>
-    </div>
-
-    <div class="section">
-      <h3>Game Log</h3>
-      <div id="log" class="log">No moves yet</div>
-    </div>
-
-    <div class="section">
-      <h3>Support Us</h3>
-      <p>Till Number: <strong>4713786</strong></p>
-    </div>
-
-    <div class="section">
-      <h3>Rules</h3>
-      <ul style="margin-left:1rem;font-size:0.8rem;">
-        <li>Roll the dice to move.</li>
-        <li>Climb ladders, slide down snakes.</li>
-        <li>First to 100 wins!</li>
-      </ul>
-    </div>
-  </div>
-</div>
 
 <script>
-const BOARD_SIZE=10;
-const LADDERS={3:45,8:12,14:26,21:39,31:73,59:80,90:92,83:97};
-const SNAKES={99:41,95:67,89:85,57:2,54:27,11:6};
-let positions=[0,0];
-let currentPlayer=0;
-let gameMode='ai';
-let rolling=false;
-const aiDelay=2000;
+/* -------------------------
+   Game: Responsive Option B
+   - crypto RNG for dice
+   - clockwise dice spin animation
+   - show number, wait 2s, then step-by-step movement
+   - AI auto-roll after its delay
+   ------------------------- */
 
-const dice=document.getElementById('dice');
-const diceVal=document.getElementById('diceVal');
-const tokenBlue=document.getElementById('token-blue');
-const tokenRed=document.getElementById('token-red');
-const turnName=document.getElementById('turnName');
-const bluePos=document.getElementById('bluePos');
-const redPos=document.getElementById('redPos');
-const logEl=document.getElementById('log');
-const btnTwo=document.getElementById('btnTwo');
-const btnAI=document.getElementById('btnAI');
-const resetBtn=document.getElementById('resetBtn');
-const board=document.getElementById('board');
-const grid=document.getElementById('grid');
+const BOARD_SIZE = 10;
+const gridEl = document.getElementById('grid');
+const cells = [];
 
-const cells=[];
+// build invisible grid (numbers hidden via CSS)
 for(let r=0;r<BOARD_SIZE;r++){
   for(let c=0;c<BOARD_SIZE;c++){
-    const div=document.createElement('div');
-    const num=calcNum(r,c);
-    div.dataset.num=num;
-    grid.appendChild(div);
-    cells[num]=div;
+    const div = document.createElement('div');
+    div.className = 'cell';
+    const idx = document.createElement('div');
+    idx.className = 'idx';
+    const number = calcCellNumber(r,c);
+    idx.textContent = number;
+    div.appendChild(idx);
+    div.dataset.num = number;
+    gridEl.appendChild(div);
+    cells[number] = div;
   }
 }
-function calcNum(r,c){
-  const rr=9-r;
-  return rr%2===0?rr*10+c+1:rr*10+(10-c);
+function calcCellNumber(row,col){
+  const rFromBottom = (BOARD_SIZE - 1) - row;
+  const base = rFromBottom * BOARD_SIZE;
+  return (rFromBottom % 2 === 0) ? base + col + 1 : base + (BOARD_SIZE - col);
 }
+
+/* elements */
+const board = document.getElementById('board');
+const tokenBlue = document.getElementById('token-blue');
+const tokenRed  = document.getElementById('token-red');
+const diceEl = document.getElementById('dice');
+const diceVal = document.getElementById('diceVal');
+const turnName = document.getElementById('turnName');
+const blueStat = document.getElementById('blueStat');
+const redStat  = document.getElementById('redStat');
+const logEl = document.getElementById('log');
+const movesCountEl = document.getElementById('movesCount');
+const winnerBanner = document.getElementById('winnerBanner');
+const burst = document.getElementById('burst');
+
+const btnModeTwo = document.getElementById('modeTwo');
+const btnModeAI  = document.getElementById('modeAI');
+const resetBtn   = document.getElementById('resetBtn');
+const copyBtn    = document.getElementById('copyBtn');
+
+let positions = [0,0];
+let currentPlayer = 0; // 0 = Blue, 1 = Red/Computer
+let moves = 0;
+let gameMode = 'ai'; // 'ai' or 'two'
+let busy = false;
+const aiDelay = 2000; // ms to wait before AI starts its dice spin
+
+// exact mapping requested
+const LADDERS = {3:45,8:12,14:26,21:39,31:73,59:80,90:92,83:97};
+const SNAKES  = {99:41,95:67,89:85,57:2,54:27,11:6};
+
+/* utility: crypto RNG for dice (1..6) */
+function rollCryptoDie(){
+  // Use crypto.getRandomValues for better randomness
+  try{
+    const a = new Uint32Array(1);
+    crypto.getRandomValues(a);
+    return (a[0] % 6) + 1;
+  } catch(e){
+    // fallback
+    return Math.floor(Math.random()*6)+1;
+  }
+}
+
+/* get center position of a cell within board */
 function getCellCenter(num){
-  const rect=board.getBoundingClientRect();
-  const cell=cells[num];
-  if(!cell) return {x:rect.width*0.08,y:rect.height*0.92};
-  const crect=cell.getBoundingClientRect();
-  return {x:crect.left-rect.left+crect.width/2,y:crect.top-rect.top+crect.height/2};
-}
-function placeToken(el,num){
-  const {x,y}=getCellCenter(num);
-  el.style.left=x+'px';
-  el.style.top=y+'px';
-}
-function updateStats(){
-  bluePos.textContent=positions[0];
-  redPos.textContent=positions[1];
-}
-function addLog(msg){
-  const p=document.createElement('div');
-  p.textContent=msg;
-  logEl.prepend(p);
+  const rect = board.getBoundingClientRect();
+  if(!cells[num]) return { x: rect.width * 0.08, y: rect.height * 0.92 };
+  const crect = cells[num].getBoundingClientRect();
+  return { x: crect.left - rect.left + crect.width/2, y: crect.top - rect.top + crect.height/2 };
 }
 
-dice.addEventListener('click',async()=>{
-  if(rolling)return;
-  if(gameMode==='ai'&&currentPlayer===1)return;
-  rolling=true;
-  dice.classList.add('rolling');
-  const roll=Math.floor(Math.random()*6)+1;
-  diceVal.textContent='...';
-  await sleep(1000);
-  dice.classList.remove('rolling');
-  diceVal.textContent=roll;
+/* place tokens (initial and on resize) */
+function placeToken(which, num){
+  const el = which === 'blue' ? tokenBlue : tokenRed;
+  const { x, y } = num > 0 ? getCellCenter(num) : { x: board.clientWidth * (which === 'blue' ? 0.08 : 0.14), y: board.clientHeight * 0.92 };
+  el.style.left = x + 'px'; el.style.top = y + 'px';
+}
 
-  await sleep(2000);
-  await movePlayer(currentPlayer,roll);
-});
-
-async function movePlayer(p,roll){
-  const start=positions[p];
-  let target=start+roll;
-  if(target>100){addLog(`${playerName(p)} rolled ${roll} → can't move`);switchTurn();return;}
-  addLog(`${playerName(p)} rolled ${roll}`);
-  const path=[];
-  for(let i=start+1;i<=target;i++){path.push(i);}
-  for(let step of path){
+/* animate token along a path (step-by-step) */
+async function animatePath(playerIndex, pathNums){
+  const el = playerIndex === 0 ? tokenBlue : tokenRed;
+  for(const n of pathNums){
+    const { x,y } = n > 0 ? getCellCenter(n) : { x: board.clientWidth * (playerIndex === 0 ? 0.08 : 0.14), y: board.clientHeight * 0.92 };
+    // small hop effect
+    el.style.transform = 'translate(-50%,-60%) scale(1.05)';
+    el.style.left = x + 'px';
+    el.style.top  = y + 'px';
     await sleep(300);
-    placeToken(p===0?tokenBlue:tokenRed,step);
+    el.style.transform = 'translate(-50%,-50%) scale(1)';
+    await sleep(120);
   }
-  positions[p]=target;
-  updateStats();
-  await sleep(400);
+}
 
+/* animate ladder/snake (jump) */
+async function animateJump(playerIndex, fromNum, toNum){
+  const el = playerIndex === 0 ? tokenBlue : tokenRed;
+  const start = getCellCenter(fromNum);
+  const end = getCellCenter(toNum);
+  showBurst((start.x + end.x)/2, (start.y + end.y)/2);
+  el.style.transition = 'transform 420ms, left 420ms, top 420ms';
+  el.style.transform = 'translate(-50%,-70%) scale(1.08)';
+  el.style.left = end.x + 'px';
+  el.style.top  = end.y + 'px';
+  await sleep(520);
+  el.style.transform = 'translate(-50%,-50%) scale(1)';
+  await sleep(120);
+}
+
+/* small visual burst */
+function showBurst(x,y){
+  burst.style.left = x + 'px';
+  burst.style.top  = y + 'px';
+  burst.style.opacity = '1';
+  burst.style.transform = 'translate(-50%,-50%) scale(1)';
+  setTimeout(()=>{ burst.style.opacity='0'; burst.style.transform='translate(-50%,-50%) scale(0.85)'; }, 480);
+}
+
+/* update stats UI */
+function updateStats(){
+  blueStat.textContent = `Blue: ${positions[0]}`;
+  redStat.textContent  = gameMode === 'ai' ? `Computer: ${positions[1]}` : `Red: ${positions[1]}`;
+  movesCountEl.textContent = `Moves: ${moves}`;
+  placeToken('blue', positions[0]);
+  placeToken('red', positions[1]);
+}
+
+/* log helper */
+function addLog(text){
+  const d = document.createElement('div');
+  d.textContent = `${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} • ${text}`;
+  logEl.prepend(d);
+  while(logEl.children.length > 12) logEl.removeChild(logEl.lastChild);
+}
+
+/* declare winner */
+function declareWinner(playerIndex){
+  addLog(`${playerName(playerIndex)} reached 100 — wins!`);
+  winnerBanner.style.display = 'block';
+  winnerBanner.textContent = `${playerName(playerIndex)} wins! 🎉`;
+  confettiBurst();
+}
+
+/* confetti */
+function confettiBurst(){
+  const w = board.clientWidth, h = board.clientHeight;
+  const canvas = document.createElement('canvas');
+  canvas.width = w; canvas.height = h; canvas.style.position='absolute'; canvas.style.left=0; canvas.style.top=0; canvas.style.zIndex=80;
+  board.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  const pieces = [];
+  for(let i=0;i<60;i++){
+    pieces.push({ x: Math.random()*w, y: Math.random()*-h, vx:(Math.random()-0.5)*6, vy:2+Math.random()*6, size:6+Math.random()*8, color:['#f97316','#60a5fa','#f472b6','#34d399','#fef08a'][Math.floor(Math.random()*5)], rot:Math.random()*Math.PI});
+  }
+  let t=0;
+  function frame(){
+    t++;
+    ctx.clearRect(0,0,w,h);
+    for(const p of pieces){
+      p.x+=p.vx; p.y+=p.vy; p.rot+=0.12;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+      ctx.fillStyle=p.color; ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);
+      ctx.restore();
+    }
+    if(t<140) requestAnimationFrame(frame); else canvas.remove();
+  }
+  frame();
+}
+
+/* ---------- Dice & Flow ---------- */
+
+/* Perform the full dice flow:
+   - spin animate for a short period
+   - reveal the dice number
+   - wait 2s so user sees it
+   - animate token step-by-step
+   - handle ladder/snake jump
+   - check win -> declare or switch turn
+   - if AI mode and it becomes AI's turn, trigger AI after a short delay
+*/
+async function playerRollAction(triggerByAI=false){
+  if(busy) return;
+  if(positions[0] === 100 || positions[1] === 100) { alert('Game over. Reset to play again.'); return; }
+  busy = true;
+
+  // start spin animation
+  diceEl.classList.add('spin');
+  diceEl.setAttribute('aria-pressed','true');
+  // use crypto RNG but only reveal after spin
+  const rolled = rollCryptoDie();
+
+  // keep spinning for the animation duration (900ms)
+  await sleep(900);
+
+  // reveal result
+  diceEl.classList.remove('spin');
+  diceVal.textContent = rolled;
+
+  // Wait 2 seconds before token movement to allow user to see the number
+  await sleep(2000);
+
+  // movement
+  moves++;
+  addLog(`${playerName(currentPlayer)} rolled ${rolled}`);
+  const start = positions[currentPlayer];
+  let target = start + rolled;
+  if(target > 100){
+    addLog(`${playerName(currentPlayer)} rolled ${rolled} — can't pass 100 (stays ${start})`);
+    // small pause then switch turn
+    await sleep(600);
+    switchTurn();
+    busy = false;
+    return;
+  }
+
+  // step-by-step path
+  const path = [];
+  for(let s = start + 1; s <= target; s++) path.push(s);
+  await animatePath(currentPlayer, path);
+  positions[currentPlayer] = target;
+  updateStats();
+
+  // ladder or snake
   if(LADDERS[target]){
-    addLog('🎯 Ladder to '+LADDERS[target]);
-    positions[p]=LADDERS[target];
-    placeToken(p===0?tokenBlue:tokenRed,positions[p]);
-  }else if(SNAKES[target]){
-    addLog('🐍 Snake to '+SNAKES[target]);
-    positions[p]=SNAKES[target];
-    placeToken(p===0?tokenBlue:tokenRed,positions[p]);
+    const dest = LADDERS[target];
+    addLog(`${playerName(currentPlayer)} landed on a ladder! climbing to ${dest}`);
+    await animateJump(currentPlayer, target, dest);
+    positions[currentPlayer] = dest;
+    updateStats();
+  } else if(SNAKES[target]){
+    const dest = SNAKES[target];
+    addLog(`${playerName(currentPlayer)} landed on a snake! sliding to ${dest}`);
+    await animateJump(currentPlayer, target, dest);
+    positions[currentPlayer] = dest;
+    updateStats();
   }
 
-  updateStats();
-  if(positions[p]===100){addLog(`${playerName(p)} wins! 🎉`);rolling=false;return;}
+  if(positions[currentPlayer] === 100){
+    declareWinner(currentPlayer);
+    busy = false;
+    return;
+  }
 
+  // short pause, then switch turn
+  await sleep(600);
   switchTurn();
-  if(gameMode==='ai'&&currentPlayer===1){
-    await sleep(aiDelay);
-    const roll=Math.floor(Math.random()*6)+1;
-    dice.classList.add('rolling');
-    diceVal.textContent='...';
-    await sleep(1000);
-    dice.classList.remove('rolling');
-    diceVal.textContent=roll;
-    await sleep(2000);
-    await movePlayer(1,roll);
+
+  // if mode = ai and now it's computer's turn, auto play after aiDelay
+  if(gameMode === 'ai' && currentPlayer === 1){
+    await sleep(aiDelay + Math.random()*400);
+    await playerRollAction(true); // AI triggers same sequence
   }
-  rolling=false;
+
+  busy = false;
 }
 
-function playerName(i){return i===0?'Blue':'Red/Comp';}
-function switchTurn(){
-  currentPlayer=1-currentPlayer;
-  turnName.textContent=playerName(currentPlayer);
-  updateDiceColor();
-}
-function updateDiceColor(){
-  dice.style.background=currentPlayer==0?'var(--blue)':'var(--red)';
-}
-
-/* === Modes & Reset === */
-btnTwo.addEventListener('click',()=>{gameMode='two';highlightModes();resetGame();});
-btnAI.addEventListener('click',()=>{gameMode='ai';highlightModes();resetGame();});
-resetBtn.addEventListener('click',resetGame);
-
-function highlightModes(){
-  btnTwo.classList.toggle('primary',gameMode==='two');
-  btnAI.classList.toggle('primary',gameMode==='ai');
-}
-function resetGame(){
-  positions=[0,0];currentPlayer=0;rolling=false;
-  updateStats();placeToken(tokenBlue,0);placeToken(tokenRed,0);
-  logEl.innerHTML='No moves yet';turnName.textContent='Blue';
-  updateDiceColor();
-}
-
-window.addEventListener('resize',()=>{
-  placeToken(tokenBlue,positions[0]);
-  placeToken(tokenRed,positions[1]);
+/* dice click (human) */
+diceEl.addEventListener('click', ()=> {
+  if(gameMode === 'ai' && currentPlayer === 1) return; // block if AI turn
+  playerRollAction(false);
 });
 
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-updateStats();
-placeToken(tokenBlue,0);
-placeToken(tokenRed,0);
-updateDiceColor();
-highlightModes();
+/* keyboard accessibility: Enter/Space on dice */
+diceEl.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); diceEl.click(); }
+});
 
-document.addEventListener("keydown",function(e){
-  if(e.ctrlKey&&(e.key==="u"||e.key==="U")){
+/* switch turn helper */
+function switchTurn(){
+  currentPlayer = 1 - currentPlayer;
+  turnName.textContent = currentPlayer === 0 ? 'Blue' : (gameMode === 'ai' ? 'Computer' : 'Red');
+  setDiceColor(true);
+}
+
+/* set dice color per active player */
+function setDiceColor(instantly){
+  if(currentPlayer === 0){
+    diceEl.style.background = `linear-gradient(180deg, ${getComputedStyle(document.documentElement).getPropertyValue('--blue1') || '--blue1'}, ${getComputedStyle(document.documentElement).getPropertyValue('--blue2') || '--blue2'})`;
+    diceEl.style.background = 'linear-gradient(180deg,#3b82f6,#2563eb)';
+  } else {
+    diceEl.style.background = 'linear-gradient(180deg,#fb7185,#ef4444)';
+  }
+  if(instantly){ diceEl.style.transition = 'none'; setTimeout(()=>diceEl.style.transition = '', 120); }
+}
+
+/* player name helper */
+function playerName(i){ return i === 0 ? 'Blue' : (gameMode === 'ai' ? 'Computer' : 'Red'); }
+
+/* ---------- Computer helper (unused directly, flow goes through playerRollAction) ---------- */
+
+/* ---------- Buttons / UI ---------- */
+btnModeTwo.addEventListener('click', ()=>{ if(gameMode !== 'two'){ gameMode = 'two'; resetGame(); updateModeButtons(); }});
+btnModeAI.addEventListener('click', ()=>{ if(gameMode !== 'ai'){ gameMode = 'ai'; resetGame(); updateModeButtons(); }});
+resetBtn.addEventListener('click', resetGame);
+copyBtn.addEventListener('click', async ()=>{
+  try{ await navigator.clipboard.writeText('4713786'); copyBtn.textContent = 'Copied!'; setTimeout(()=> copyBtn.textContent = 'Copy', 1200); }catch(e){ alert('Copy failed — use: 4713786'); }
+});
+
+function updateModeButtons(){
+  btnModeAI.classList.toggle('active', gameMode === 'ai');
+  btnModeTwo.classList.toggle('active', gameMode === 'two');
+  // update Red label
+  redStat.textContent = gameMode === 'ai' ? `Computer: ${positions[1]}` : `Red: ${positions[1]}`;
+  turnName.textContent = currentPlayer === 0 ? 'Blue' : (gameMode === 'ai' ? 'Computer' : 'Red');
+}
+
+/* reset game */
+function resetGame(){
+  positions = [0,0];
+  currentPlayer = 0;
+  moves = 0;
+  busy = false;
+  diceVal.textContent = '—';
+  winnerBanner.style.display = 'none';
+  logEl.innerHTML = 'No moves yet';
+  updateStats();
+  setDiceColor(true);
+}
+
+/* small utilities */
+function sleep(ms){ return new Promise(res => setTimeout(res, ms)); }
+
+/* initial placement on load and on resize */
+window.addEventListener('resize', ()=>{ placeToken('blue', positions[0]); placeToken('red', positions[1]); });
+const boardImg = document.getElementById('boardImg');
+if(boardImg.complete) updateStats(); else boardImg.addEventListener('load', updateStats);
+
+/* initial UI */
+updateModeButtons();
+setDiceColor(true);
+
+/* Prevent Ctrl+U as requested */
+document.addEventListener("keydown", function(e) {
+  if (e.ctrlKey && (e.key === "u" || e.key === "U")) {
     e.preventDefault();
     alert("You are not allowed to copy content or view source!");
   }
