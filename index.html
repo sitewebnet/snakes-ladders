@@ -21,38 +21,81 @@
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
     background: linear-gradient(180deg, var(--bg1), var(--bg2));
     color: #e8f0ff;
-    overflow: hidden;
+    overflow-x: hidden;    /* allow vertical scrolling only */
+    overflow-y: auto;
   }
   .game-wrapper {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    transform-origin: center center;
-    transition: transform .5s ease, width .5s, height .5s;
   }
-  .rotated {
-    transform: rotate(90deg) translateY(-100%);
-    width: 100vh;
-    height: 100vw;
+  .wrap {
+    width: 100%;
+    max-width: 1180px;
+    margin: 28px auto;
+    padding: 18px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 18px;
+    align-items: start;
   }
-  .wrap { max-width: 1180px; margin: 28px auto; padding: 18px; display: grid; grid-template-columns: 1fr 380px; gap: 18px; align-items: start; }
-  .card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius: 14px; padding: 12px; border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 8px 30px rgba(2,6,23,0.6); }
+  .card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: 14px;
+    padding: 12px;
+    border: 1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+  }
   .title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
   .title h1 { font-size: 20px; margin: 0; }
   .subtitle { font-size: 13px; color: var(--muted); }
   .board-wrap { position: relative; padding: 10px; }
-  .board { width: 720px; height: 720px; max-width: 100%; border-radius: 12px; overflow: hidden; position: relative; border: 6px solid rgba(255,255,255,0.04); background: #000; box-shadow: 0 18px 40px rgba(2,6,23,0.6); }
-  .board img { display: block; width: 100%; height: 100%; object-fit: cover; filter: contrast(1.02) saturate(1.05); }
+  .board {
+    width: 720px;
+    height: 720px;
+    max-width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    border: 6px solid rgba(255,255,255,0.04);
+    background: #000;
+    box-shadow: 0 18px 40px rgba(2,6,23,0.6);
+  }
+  .board img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: contrast(1.02) saturate(1.05);
+  }
   .grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(10,1fr); grid-template-rows: repeat(10,1fr); pointer-events: none; }
   .cell .idx { display: none; }
-  .token { position: absolute; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; box-shadow: 0 10px 28px rgba(2,6,23,0.6); border: 3px solid rgba(255,255,255,0.9); transform: translate(-50%,-50%); transition: left 420ms cubic-bezier(.2,.9,.3,1), top 420ms cubic-bezier(.2,.9,.3,1), transform 420ms; }
+  .token {
+    position: absolute;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 900;
+    box-shadow: 0 10px 28px rgba(2,6,23,0.6);
+    border: 3px solid rgba(255,255,255,0.9);
+    transform: translate(-50%,-50%);
+    transition: left 420ms cubic-bezier(.2,.9,.3,1), top 420ms cubic-bezier(.2,.9,.3,1), transform 420ms;
+  }
   .token.blue { background: linear-gradient(180deg,#3b82f6,#2563eb); }
   .token.red { background: linear-gradient(180deg,#fb7185,#ef4444); }
   .token .label { font-size: 13px; letter-spacing: 0.5px; }
   .controls { display: flex; flex-direction: column; gap: 12px; }
-  .dice { width: 120px; height: 120px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 900; color: white; cursor: pointer; user-select: none; border: 4px solid rgba(255,255,255,0.05); box-shadow: 0 14px 40px rgba(2,6,23,0.6); transition: transform .9s cubic-bezier(.22,.9,.3,1); }
+  .dice {
+    width: 120px; height: 120px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: 900; color: white;
+    cursor: pointer; user-select: none;
+    border: 4px solid rgba(255,255,255,0.05);
+    box-shadow: 0 14px 40px rgba(2,6,23,0.6);
+    transition: transform .9s cubic-bezier(.22,.9,.3,1);
+  }
   .dice.rolling { transform: rotate(720deg) scale(1.02); }
   .dice .small { font-size: 13px; opacity: 0.95; }
   .meta { display: flex; gap: 8px; align-items: center; }
@@ -62,13 +105,29 @@
   .donate .till { font-weight: 900; font-size: 20px; }
   .copy { background: #f59e0b; padding: 8px 12px; border-radius: 10px; border: none; cursor: pointer; font-weight: 800; }
   .small-muted { font-size: 12px; color: rgba(255,255,255,0.75); }
-  .btn { padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.03); cursor: pointer; }
+  .btn { padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.03); cursor: pointer; color: white; }
   .winner-banner { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); padding: 10px 18px; border-radius: 999px; background: linear-gradient(90deg,#fef3c7,#fde68a); color: #111; font-weight: 900; display: none; z-index: 60; }
   .highlight-burst { position: absolute; pointer-events: none; border-radius: 999px; box-shadow: 0 6px 28px rgba(255,255,255,0.12); opacity: 0; transform: scale(0.85); transition: opacity 260ms, transform 260ms; }
-  @media (max-width:1100px){ .wrap { grid-template-columns: 1fr; gap: 14px; } .board { height: min(90vw, 720px); } }
+
+  @media (max-width: 800px) {
+    .wrap { grid-template-columns: 1fr; gap: 14px; padding: 8px; }
+    .controls { order: -1; }
+    .board { width: 100%; height: auto; aspect-ratio: 1 / 1; }
+  }
 </style>
 </head>
 <body>
+
+<!-- Game Mode Selection -->
+<div id="modeSelect" style="
+  position:fixed;inset:0;background:rgba(7,16,38,0.95);
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;z-index:100;color:white;text-align:center;
+">
+  <h1 style="margin-bottom:20px;font-size:26px;">Choose Game Mode</h1>
+  <button class="btn" id="vsComputerBtn" style="padding:12px 20px;margin:8px;">1 Player (vs Computer)</button>
+  <button class="btn" id="twoPlayersBtn" style="padding:12px 20px;margin:8px;">2 Players</button>
+</div>
 
 <div class="game-wrapper">
   <div class="wrap">
@@ -147,7 +206,7 @@
 </div>
 
 <script>
-  // --- Game Logic (same as before) ---
+  // --- Grid Setup ---
   const BOARD_SIZE=10;
   const gridEl=document.getElementById('grid');
   const cells=[];
@@ -183,7 +242,8 @@
 
   const LADDERS={3:45,8:12,14:26,21:39,31:73,59:80,90:92,83:97};
   const SNAKES={99:41,95:67,89:85,57:2,54:27,11:6};
-  let positions=[0,0],currentPlayer=0,moves=0;
+  let positions=[0,0],currentPlayer=0,moves=0,mode="2p";
+
   const tokenBlue=document.getElementById('token-blue'),
         tokenRed=document.getElementById('token-red'),
         dice=document.getElementById('dice'),
@@ -197,15 +257,20 @@
         burst=document.getElementById('burst'),
         resetBtn=document.getElementById('resetBtn');
 
+  // --- Mode Selection ---
+  const modeSelect = document.getElementById('modeSelect');
+  const vsComputerBtn = document.getElementById('vsComputerBtn');
+  const twoPlayersBtn = document.getElementById('twoPlayersBtn');
+  vsComputerBtn.onclick = () => { mode = "cpu"; modeSelect.style.display = "none"; alert("You are Blue. Computer is Red."); };
+  twoPlayersBtn.onclick = () => { mode = "2p"; modeSelect.style.display = "none"; alert("Two Player Mode — Blue starts!"); };
+
   setDiceColor();updateStats();placeToken('blue',0);placeToken('red',0);
 
   function placeToken(which,num){
     const el=which==='blue'?tokenBlue:tokenRed;
     const {x,y}=num>0?getCellCenter(num):{x:board.clientWidth*(which==='blue'?0.08:0.14),y:board.clientHeight*0.95};
-    el.style.left=x+'px';
-    el.style.top=y+'px';
+    el.style.left=x+'px'; el.style.top=y+'px';
   }
-
   window.addEventListener('resize',()=>{placeToken('blue',positions[0]);placeToken('red',positions[1]);});
 
   async function animatePath(playerIndex,pathNums){
@@ -245,6 +310,7 @@
   dice.addEventListener('click',async()=>{
     if(rolling)return;
     if(positions[0]===100||positions[1]===100){alert('Game over. Reset to play again.');return;}
+    if(mode==="cpu" && currentPlayer===1){return;} // prevent user from clicking during CPU turn
     rolling=true;
     dice.classList.add('rolling');
     setDiceColor(true);
@@ -256,65 +322,74 @@
     rolling=false;
     moves++;
     movesCountEl.textContent='Moves: '+moves;
-    await handleMove(result);
+    await movePlayer(currentPlayer,result);
+    if(positions[currentPlayer]===100){
+      declareWinner(currentPlayer);
+      return;
+    }
+    currentPlayer=(currentPlayer+1)%2;
+    updateTurn();
+    // CPU move automatically if single player
+    if(mode==="cpu" && currentPlayer===1){
+      await sleep(1000);
+      dice.click();
+    }
   });
 
-  async function handleMove(roll){
-    const p=currentPlayer;
-    const start=positions[p];
-    let target=start+roll;
-    if(target>100){addLog(`${playerName(p)} rolled ${roll} — can't pass 100`);switchTurn();return;}
-    addLog(`${playerName(p)} rolled ${roll} — moving to ${target}`);
-    const path=[];for(let s=start+1;s<=target;s++)path.push(s);
-    await animatePath(p,path);
-    positions[p]=target;
+  async function movePlayer(i,steps){
+    const oldPos=positions[i];
+    const newPos=Math.min(100,oldPos+steps);
+    const path=[];
+    for(let n=oldPos+1;n<=newPos;n++)path.push(n);
+    await animatePath(i,path);
+    positions[i]=newPos;
+    let text=`${i===0?'Blue':'Red'} rolled ${steps} → ${newPos}`;
+    if(LADDERS[newPos]){await sleep(400);await animateJump(i,newPos,LADDERS[newPos],'ladder');positions[i]=LADDERS[newPos];text+=` ↑ climbed to ${positions[i]}`;}
+    else if(SNAKES[newPos]){await sleep(400);await animateJump(i,newPos,SNAKES[newPos],'snake');positions[i]=SNAKES[newPos];text+=` ↓ slid to ${positions[i]}`;}
+    log(text);
     updateStats();
-    if(LADDERS[target]){
-      const dest=LADDERS[target];
-      addLog(`${playerName(p)} climbed a ladder to ${dest}`);
-      await animateJump(p,target,dest,'ladder');
-      positions[p]=dest;updateStats();
-    }else if(SNAKES[target]){
-      const dest=SNAKES[target];
-      addLog(`${playerName(p)} slid down a snake to ${dest}`);
-      await animateJump(p,target,dest,'snake');
-      positions[p]=dest;updateStats();
-    }
-    if(positions[p]===100){declareWinner(p);return;}
-    switchTurn();
   }
 
-  function switchTurn(){currentPlayer=1-currentPlayer;turnName.textContent=currentPlayer===0?'Blue':'Red';setDiceColor();}
-  function setDiceColor(instantly){dice.style.background=currentPlayer===0?'linear-gradient(180deg,#3b82f6,#2563eb)':'linear-gradient(180deg,#fb7185,#ef4444)';if(instantly)dice.style.transition='none';setTimeout(()=>dice.style.transition='',50);}
-  function updateStats(){blueStat.textContent='Blue: '+positions[0];redStat.textContent='Red: '+positions[1];}
-  function addLog(msg){logEl.innerHTML+=`<div>${msg}</div>`;logEl.scrollTop=logEl.scrollHeight;}
-  function playerName(i){return i===0?'Blue':'Red';}
-  function declareWinner(p){winnerBanner.style.display='block';winnerBanner.textContent=playerName(p)+' Wins!';addLog(`<b>${playerName(p)} Wins! 🎉</b>`);}
-  function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-  resetBtn.addEventListener('click',()=>location.reload());
-  document.getElementById('copyBtn').addEventListener('click',()=>{navigator.clipboard.writeText('4713786');alert('Till number copied');});
-  
-  // --- Orientation Feature ---
-  async function requestLandscapeMode(){
-    if(screen.orientation&&screen.orientation.lock){
-      try{
-        const allow=confirm("Rotate screen for better game experience?");
-        if(!allow)return;
-        if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();
-        await screen.orientation.lock("landscape");
-        console.log("Orientation locked to landscape");
-      }catch(err){console.warn("Orientation lock failed:",err);}
-    }
+  function declareWinner(i){
+    winnerBanner.style.display='block';
+    winnerBanner.textContent=`🏆 ${i===0?'Blue':'Red'} Wins!`;
+    showBurst(board.clientWidth/2,board.clientHeight/2);
   }
-  window.addEventListener("load",()=>{if(/Mobi|Android/i.test(navigator.userAgent))setTimeout(requestLandscapeMode,1500);});
-</script>
-<script>
-  document.addEventListener("keydown", function(e) {
-    if (e.ctrlKey && (e.key === "u" || e.key === "U")) {
-      e.preventDefault();
-      alert("You are not allowed to copy content or view source!");
-    }
+
+  function updateTurn(){
+    turnName.textContent=currentPlayer===0?'Blue':'Red';
+    setDiceColor();
+  }
+  function updateStats(){
+    blueStat.textContent=`Blue: ${positions[0]}`;
+    redStat.textContent=`Red: ${positions[1]}`;
+  }
+  function log(t){
+    if(logEl.textContent==='No moves yet')logEl.textContent='';
+    logEl.innerHTML=`<div>${t}</div>`+logEl.innerHTML;
+    logEl.scrollTop=0;
+  }
+  function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+  function setDiceColor(rolling=false){
+    dice.style.background=currentPlayer===0
+      ?(rolling?'#60a5fa':'#3b82f6')
+      :(rolling?'#fca5a5':'#ef4444');
+  }
+
+  resetBtn.onclick=()=>{
+    positions=[0,0];currentPlayer=0;moves=0;
+    winnerBanner.style.display='none';
+    updateStats();updateTurn();
+    movesCountEl.textContent='Moves: 0';
+    logEl.textContent='No moves yet';
+    placeToken('blue',0);placeToken('red',0);
+  };
+
+  document.getElementById('copyBtn').addEventListener('click',()=>{
+    navigator.clipboard.writeText('4713786');
+    alert('Till number copied: 4713786');
   });
-</script>  
+</script>
+
 </body>
 </html>
