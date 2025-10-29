@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />  
-<title>Snakes & Ladders — Modern (Custom)</title>
+<title>Snakes & Ladders</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" type="image/jpeg" href="./favicon1.jpeg">  
 
@@ -21,7 +21,7 @@
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
     background: linear-gradient(180deg, var(--bg1), var(--bg2));
     color: #e8f0ff;
-    overflow-x: hidden;    /* allow vertical scrolling only */
+    overflow-x: hidden;  
     overflow-y: auto;
   }
   .game-wrapper {
@@ -118,7 +118,6 @@
 </head>
 <body>
 
-<!-- Game Mode Selection -->
 <div id="modeSelect" style="
   position:fixed;inset:0;background:rgba(7,16,38,0.95);
   display:flex;flex-direction:column;align-items:center;
@@ -189,7 +188,7 @@
             </div>
             <div><button id="copyBtn" class="copy">Copy</button></div>
           </div>
-          <div style="margin-top:8px;font-size:12px;color:#111">Use Lipa na M-Pesa → Pay Bill/Till → enter till number and amount.</div>
+          <div style="margin-top:8px;font-size:12px;color:#111">Use Lipa na M-Pesa → Buy Goods and Services.</div>
         </div>
       </div>
 
@@ -206,7 +205,6 @@
 </div>
 
 <script>
-  // --- Grid Setup ---
   const BOARD_SIZE = 10;
   const gridEl = document.getElementById('grid');
   const cells = [];
@@ -240,17 +238,15 @@
     return { x, y };
   }
 
-  // --- Game data ---
+
   const LADDERS = { 3: 45, 8: 12, 14: 26, 21: 39, 31: 73, 59: 80, 90: 92, 83: 97 };
   const SNAKES = { 99: 41, 95: 67, 89: 85, 57: 2, 54: 27, 11: 6 };
 
-  // positions: index 0 = Blue, 1 = Red
   let positions = [0, 0];
   let currentPlayer = 0;
   let moves = 0;
-  let mode = "2p"; // "2p" or "cpu"
+  let mode = "2p"; 
 
-  // --- Elements ---
   const tokenBlue = document.getElementById('token-blue'),
         tokenRed  = document.getElementById('token-red'),
         dice      = document.getElementById('dice'),
@@ -264,24 +260,16 @@
         burst     = document.getElementById('burst'),
         resetBtn  = document.getElementById('resetBtn');
 
-  // Mode selection buttons (must exist in DOM)
   const modeSelect = document.getElementById('modeSelect');
   const vsComputerBtn = document.getElementById('vsComputerBtn');
   const twoPlayersBtn = document.getElementById('twoPlayersBtn');
 
-  // --- Mode selection handlers ---
   vsComputerBtn.addEventListener('click', () => {
     mode = "cpu";
-    // hide overlay
     if (modeSelect) modeSelect.style.display = 'none';
-    // ensure turn indicator is correct
     currentPlayer = 0;
     updateTurn();
     alert("You are Blue. Computer is Red.");
-    // if you want computer to start for testing: uncomment the next lines:
-    // currentPlayer = 1;
-    // updateTurn();
-    // setTimeout(() => dice.click(), 800);
   });
 
   twoPlayersBtn.addEventListener('click', () => {
@@ -292,13 +280,11 @@
     alert("Two Player Mode — Blue starts!");
   });
 
-  // Initialize visuals & positions
   setDiceColor();
   updateStats();
   placeToken('blue', 0);
   placeToken('red', 0);
 
-  // --- Placement & responsiveness ---
   function placeToken(which, num) {
     const el = which === 'blue' ? tokenBlue : tokenRed;
     const { x, y } = num > 0 ? getCellCenter(num) : { x: board.clientWidth * (which === 'blue' ? 0.08 : 0.14), y: board.clientHeight * 0.95 };
@@ -307,7 +293,6 @@
   }
   window.addEventListener('resize', () => { placeToken('blue', positions[0]); placeToken('red', positions[1]); });
 
-  // --- Animations ---
   async function animatePath(playerIndex, pathNums) {
     const el = playerIndex === 0 ? tokenBlue : tokenRed;
     for (let n of pathNums) {
@@ -345,21 +330,17 @@
     }, 480);
   }
 
-  // --- Dice & Turn Logic ---
   let rolling = false;
 
   dice.addEventListener('click', async () => {
-    // Prevent interactions during roll or if game ended
     if (rolling) return;
     if (positions[0] === 100 || positions[1] === 100) { alert('Game over. Reset to play again.'); return; }
-    // Prevent human from clicking during CPU turn
     if (mode === "cpu" && currentPlayer === 1) return;
 
     rolling = true;
     dice.classList.add('rolling');
     setDiceColor(true);
     diceVal.textContent = '...';
-    // simulate roll
     const result = Math.floor(Math.random() * 6) + 1;
     await sleep(720);
     diceVal.textContent = result;
@@ -369,39 +350,28 @@
     moves++;
     movesCountEl.textContent = 'Moves: ' + moves;
 
-    // perform move
     await movePlayer(currentPlayer, result);
 
-    // check win
     if (positions[currentPlayer] === 100) {
       declareWinner(currentPlayer);
       return;
     }
 
-    // switch turn
     currentPlayer = (currentPlayer + 1) % 2;
     updateTurn();
 
-    // CPU move automatically if single player and it's CPU's turn
     if (mode === "cpu" && currentPlayer === 1) {
-      // Wait a bit so the user sees the turn change and animations finish
       setTimeout(() => {
-        // double-check no winner and not rolling
         if (positions[0] < 100 && positions[1] < 100 && !rolling) {
-          // call dice.click() to reuse same flow (it will be blocked by the "mode===cpu && currentPlayer===1" guard inside click handler,
-          // so we should directly perform the CPU roll instead of clicking to avoid that check)
-          // But earlier we had click-based auto-roll. To ensure CPU runs regardless of that guard, call cpuRoll() directly:
           cpuRoll();
         }
       }, 900);
     }
   });
 
-  // cpuRoll: perform a computer roll without relying on dice.click()
   async function cpuRoll(){
     if (positions[0] === 100 || positions[1] === 100) return;
     if (currentPlayer !== 1) return;
-    // Visual dice rolling for CPU
     rolling = true;
     dice.classList.add('rolling');
     setDiceColor(true);
@@ -419,11 +389,10 @@
 
     if (positions[1] === 100) { declareWinner(1); return; }
 
-    currentPlayer = 0; // back to human
+    currentPlayer = 0;
     updateTurn();
   }
 
-  // --- Move Player (single unified function) ---
   async function movePlayer(i, steps) {
     const oldPos = positions[i];
     const newPos = Math.min(100, oldPos + steps);
@@ -433,7 +402,6 @@
     positions[i] = newPos;
     let text = `${i === 0 ? 'Blue' : 'Red'} rolled ${steps} → ${newPos}`;
 
-    // Ladder
     if (LADDERS[newPos]) {
       const dest = LADDERS[newPos];
       text += ` ↑ climbed to ${dest}`;
@@ -450,11 +418,9 @@
 
     log(text);
     updateStats();
-    // ensure tokens are placed correctly after final adjustments
     placeToken(i === 0 ? 'blue' : 'red', positions[i]);
   }
 
-  // --- UI small helpers ---
   function declareWinner(i) {
     winnerBanner.style.display = 'block';
     winnerBanner.textContent = `🏆 ${i === 0 ? 'Blue' : 'Red'} Wins!`;
@@ -479,7 +445,6 @@
   }
 
   function addLog(t) {
-    // alias used sometimes for announcing winner etc.
     if (logEl.textContent === 'No moves yet') logEl.textContent = '';
     logEl.innerHTML = `<div>${t}</div>` + logEl.innerHTML;
   }
@@ -487,13 +452,11 @@
   function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
   function setDiceColor(rollingFlag = false) {
-    // use gradients like before for nicer look
     dice.style.background = currentPlayer === 0
       ? (rollingFlag ? 'linear-gradient(180deg,#60a5fa,#3b82f6)' : 'linear-gradient(180deg,#3b82f6,#2563eb)')
       : (rollingFlag ? 'linear-gradient(180deg,#fca5a5,#fb7185)' : 'linear-gradient(180deg,#fb7185,#ef4444)');
   }
 
-  // --- Reset ---
   resetBtn.onclick = () => {
     positions = [0, 0];
     currentPlayer = 0;
@@ -506,14 +469,11 @@
     diceVal.textContent = '—';
   };
 
-  // --- Copy Till number ---
   document.getElementById('copyBtn').addEventListener('click', () => {
     navigator.clipboard.writeText('4713786');
     alert('Till number copied: 4713786');
   });
 
-  // --- Token placement on load/resize (ensure tokens align nicely) ---
-  // ensure tokens align initially after image load if board image influences size
   window.addEventListener('load', () => { placeToken('blue', positions[0]); placeToken('red', positions[1]); });
   window.addEventListener('resize', () => { placeToken('blue', positions[0]); placeToken('red', positions[1]); });
 
@@ -522,4 +482,5 @@
 
 </body>
 </html>
+
 
