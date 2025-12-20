@@ -101,13 +101,57 @@
   .meta { display: flex; gap: 8px; align-items: center; }
   .pill { padding: 8px 10px; border-radius: 999px; background: rgba(255,255,255,0.03); font-weight: 700; }
   .log { background: rgba(255,255,255,0.02); padding: 10px; border-radius: 10px; max-height: 180px; overflow: auto; font-size: 13px; }
-  .donate { background: linear-gradient(90deg,#fff7ed,#fff1e6); color: #1f2937; padding: 12px; border-radius: 10px; }
+  .donate { 
+    background: linear-gradient(90deg,#fff7ed,#fff1e6); 
+    color: #1f2937; 
+    padding: 12px; 
+    border-radius: 10px; 
+    overflow: hidden;
+    max-height: 500px;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease, padding 0.5s cubic-bezier(0.4, 0, 0.2, 1), margin 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 0;
+    opacity: 1;
+  }
+  .donate.hidden { 
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    border: none;
+  }
   .donate .till { font-weight: 900; font-size: 20px; }
   .copy { background: #f59e0b; padding: 8px 12px; border-radius: 10px; border: none; cursor: pointer; font-weight: 800; }
   .small-muted { font-size: 12px; color: rgba(255,255,255,0.75); }
   .btn { padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.03); cursor: pointer; color: white; }
   .winner-banner { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); padding: 10px 18px; border-radius: 999px; background: linear-gradient(90deg,#fef3c7,#fde68a); color: #111; font-weight: 900; display: none; z-index: 60; }
   .highlight-burst { position: absolute; pointer-events: none; border-radius: 999px; box-shadow: 0 6px 28px rgba(255,255,255,0.12); opacity: 0; transform: scale(0.85); transition: opacity 260ms, transform 260ms; }
+  
+  .support-toggle {
+    background: linear-gradient(90deg,#f59e0b,#d97706);
+    color: white;
+    padding: 10px 14px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-weight: 800;
+    margin-top: 10px;
+    transition: background 0.3s ease;
+    border: none;
+    width: 100%;
+  }
+  .support-toggle:hover {
+    background: linear-gradient(90deg,#ea580c,#c2410c);
+  }
+  .toggle-arrow {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 16px;
+  }
+  .toggle-arrow.up {
+    transform: rotate(180deg);
+  }
 
   @media (max-width: 800px) {
     .wrap { grid-template-columns: 1fr; gap: 14px; padding: 8px; }
@@ -178,23 +222,27 @@
         </div>
       </div>
 
-      <div style="margin-top:10px">
-        <div class="donate">
-          <div style="font-weight:800">Support Us (M-Pesa)</div>
-          <div style="margin-top:8px; display:flex;align-items:center;justify-content:space-between">
-            <div>
-              <div style="font-size:13px">Till number</div>
-              <div class="till">4713786</div>
-            </div>
-            <div><button id="copyBtn" class="copy">Copy</button></div>
+      <button class="support-toggle" id="supportToggle">
+        <span>Click to support us</span>
+        <span class="toggle-arrow">▼</span>
+      </button>
+
+      <div class="donate hidden" id="donateSection">
+        <div style="font-weight:800">Support Us (M-Pesa)</div>
+        <div style="margin-top:8px; display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:13px">Till number</div>
+            <div class="till">4713786</div>
           </div>
-          <div style="margin-top:8px;font-size:12px;color:#111">Use Lipa na M-Pesa → Buy Goods and Services.</div>
+          <div><button id="copyBtn" class="copy">Copy</button></div>
         </div>
+        <div style="margin-top:8px;font-size:12px;color:#111">Use Lipa na M-Pesa → Buy Goods and Services.</div>
       </div>
 
       <div style="margin-top:10px">
         <div style="font-weight:800">Rules & Notes</div>
         <ul style="font-size:13px;margin:8px 0 0 18px">
+          <li>Zoom in or out for a better view</li>
           <li>Roll 1–6, move forward square by square.</li>
           <li>If you land at bottom of ladder, climb to its top.</li>
           <li>If you land on a snake head, slide to its tail.</li>
@@ -474,13 +522,30 @@
     alert('Till number copied: 4713786');
   });
 
+  // Support toggle functionality
+  const supportToggle = document.getElementById('supportToggle');
+  const donateSection = document.getElementById('donateSection');
+  const toggleArrow = document.querySelector('.toggle-arrow');
+
+  supportToggle.addEventListener('click', () => {
+    const isHidden = donateSection.classList.contains('hidden');
+    
+    if (isHidden) {
+      // Show the donate section
+      donateSection.classList.remove('hidden');
+      toggleArrow.classList.add('up');
+      toggleArrow.textContent = '▲';
+    } else {
+      // Hide the donate section
+      donateSection.classList.add('hidden');
+      toggleArrow.classList.remove('up');
+      toggleArrow.textContent = '▼';
+    }
+  });
+
   window.addEventListener('load', () => { placeToken('blue', positions[0]); placeToken('red', positions[1]); });
   window.addEventListener('resize', () => { placeToken('blue', positions[0]); placeToken('red', positions[1]); });
 
 </script>
-
-
 </body>
 </html>
-
-
