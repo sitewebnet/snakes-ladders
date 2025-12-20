@@ -547,5 +547,14 @@
   window.addEventListener('resize', () => { placeToken('blue', positions[0]); placeToken('red', positions[1]); });
 
 </script>
+    <script>
+         document.addEventListener("keydown", function(e) {
+           if (e.ctrlKey && (e.key === "u" || e.key === "U")) {
+             e.preventDefault();
+             alert("You are not allowed to copy content or view source!");
+           }
+         });
+    </script>  
 </body>
 </html>
+
